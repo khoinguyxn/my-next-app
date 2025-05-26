@@ -1,15 +1,22 @@
-name: Playwright Tests
+name: Dev deployment
+
 on:
   push:
-    branches: [main, master]
+    branches: [main]
   pull_request:
-    branches: [main, master]
+    branches: [main]
+
+permissions:
+  pull-requests: write
+
 jobs:
   test:
     timeout-minutes: 60
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
       - name: Install unzip
         run: sudo apt-get update && sudo apt-get install -y unzip
       - name: Install bun
@@ -20,10 +27,12 @@ jobs:
         run: bun install
       - name: Install Playwright Browsers
         run: bunx playwright install --with-deps
+      - name: Lint
+        run: bun run lint
       - name: Run changed Playwright tests
         if: github.event_name == 'pull_request'
         run: bunx playwright test --only-changed=$GITHUB_BASE_REF
-      - name: Run Cucumber tests
+      - name: Run E2E tests
         run: bun run test:e2e
       - uses: actions/upload-artifact@v4
         if: ${{ !cancelled() }}
