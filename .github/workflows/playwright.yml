@@ -20,8 +20,12 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: lts/*
+      - name: Install bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
       - name: Install dependencies
-        run: npm ci
+        run: bun install
       - name: Run changed Playwright tests
         run: npx playwright test --only-changed=$GITHUB_BASE_REF
         if: github.event_name == 'pull_request'
