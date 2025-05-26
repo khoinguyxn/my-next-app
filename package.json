@@ -33,6 +33,8 @@
     "eslint-config-next": "15.3.2",
     "inversify": "^7.0.0-alpha.5",
     "jotai-devtools": "^0.12.0",
+    "prettier": "^3.5.3",
+    "prettier-plugin-tailwindcss": "^0.6.11",
     "reflect-metadata": "^0.2.2",
     "tailwindcss": "^4",
     "ts-node": "^10.9.2",
