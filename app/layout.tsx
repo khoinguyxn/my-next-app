@@ -3,7 +3,7 @@ import './globals.css';
 
 import { Inter } from 'next/font/google';
 
-import { JotaiDevTools } from '../components/DevToolsClient';
+import { JotaiDevTools } from '../components/JotaiDevTools';
 
 const inter = Inter({
   subsets: ["latin"],
