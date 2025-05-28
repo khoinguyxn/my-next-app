@@ -3,7 +3,11 @@ import './globals.css';
 
 import { Inter } from 'next/font/google';
 
-import { JotaiDevTools } from '../components/JotaiDevTools';
+import { AppSidebar } from '@/components/app-sidebar';
+import { PageHeader } from '@/components/page-header';
+import { SidebarInset, SidebarProvider } from '@/components/ui/sidebar';
+
+import { JotaiDevTools } from '../components/jotai-dev-tools';
 
 const inter = Inter({
   subsets: ["latin"],
@@ -24,7 +28,15 @@ export default function RootLayout({
     <>
       <JotaiDevTools />
       <html lang="en">
-        <body className={`${inter.className} antialiased`}>{children}</body>
+        <body className={`${inter.className} antialiased`}>
+          <SidebarProvider>
+            <AppSidebar />
+            <SidebarInset>
+              <PageHeader />
+              {children}
+            </SidebarInset>
+          </SidebarProvider>
+        </body>
       </html>
     </>
   );
