@@ -31,7 +31,7 @@ export default function RootLayout({
         <body className={`${inter.className} antialiased`}>
           <SidebarProvider>
             <AppSidebar />
-            <SidebarInset>
+            <SidebarInset className="p-5 gap-5">
               <PageHeader />
               {children}
             </SidebarInset>
