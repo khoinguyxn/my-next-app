@@ -29,6 +29,8 @@ jobs:
         run: bunx playwright install --with-deps
       - name: Lint
         run: bun run lint
+      - name: Run unit tests
+        run: bun run test
       - name: Run changed Playwright tests
         if: github.event_name == 'pull_request'
         run: bunx playwright test --only-changed=$GITHUB_BASE_REF
