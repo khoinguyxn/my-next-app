@@ -1,0 +1,97 @@
+import {Container} from 'inversify';
+import {MenuItemRepository} from '@/domain/repositories/menu-item-repository';
+import {MenuItemRepositoryImpl} from '@/infrastructure/repositories/menu-item-repository';
+import {MenuItem} from '@/domain/models/menu-item';
+import {PostgrestError, SupabaseClient} from '@supabase/supabase-js';
+
+const mockSelect = jest.fn();
+const mockFrom = jest.fn().mockReturnValue({
+    select: mockSelect,
+});
+
+const mockSupabaseClient: jest.Mocked<Pick<SupabaseClient, 'from'>
+> = {
+    from: mockFrom,
+};
+
+describe('MenuItemRepositoryImpl', () => {
+    let menuItemRepository: MenuItemRepository;
+
+    beforeEach(() => {
+        const container = new Container();
+        container.bind("Supabase").toConstantValue(mockSupabaseClient);
+        container.bind<MenuItemRepository>("MenuItemRepository").to(MenuItemRepositoryImpl);
+
+        menuItemRepository = container.get<MenuItemRepository>("MenuItemRepository");
+    });
+
+    describe('getAll', () => {
+        it('should return menu items when Supabase returns data', async () => {
+            // Arrange
+            const mockMenuItems: MenuItem[] = [
+                {
+                    menuItemId: 1,
+                    name: 'Espresso',
+                    price: 4.2,
+                    menuCategoryId: 1
+                },
+                {
+                    menuItemId: 2,
+                    name: 'Latte',
+                    price: 4.8,
+                    menuCategoryId: 1
+                }
+            ];
+
+            mockSelect.mockResolvedValue({
+                data: mockMenuItems,
+                error: null
+            });
+
+            // Act
+            const result = await menuItemRepository.getAll();
+
+            // Assert
+            expect(result).toEqual(mockMenuItems);
+            expect(mockSupabaseClient.from).toHaveBeenCalledWith('MenuItem');
+            expect(mockSelect).toHaveBeenCalledWith('*');
+        });
+
+        it('should throw an error when Supabase returns error', async () => {
+            // Arrange
+            const mockError: PostgrestError = {
+                message: 'Database error',
+                code: '500',
+                details: '',
+                hint: '',
+                name: ''
+            };
+
+            mockSelect.mockResolvedValue({
+                data: null,
+                error: mockError
+            });
+
+            // Act and Assert
+            await expect(menuItemRepository.getAll()).rejects.toEqual(mockError);
+            expect(mockSupabaseClient.from).toHaveBeenCalledWith('MenuItem');
+            expect(mockSelect).toHaveBeenCalledWith('*');
+        });
+
+        it('should return null when Supabase returns null data', async () => {
+            // Arrange
+            mockSelect.mockResolvedValue({
+                data: null,
+                error: null
+            });
+
+            // Act
+            const result = await menuItemRepository.getAll();
+
+            // Assert
+            expect(result).toBeNull();
+            expect(mockSupabaseClient.from).toHaveBeenCalledWith('MenuItem');
+            expect(mockSelect).toHaveBeenCalledWith('*');
+        });
+    });
+});

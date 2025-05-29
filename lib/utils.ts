@@ -6,13 +6,13 @@ export function cn(...inputs: ClassValue[]) {
 }
 
 export const areSupabaseEnvVariablesSet = () => {
-  if (!process.env.SUPABASE_PROJECT_URL) {
+  if (!process.env.NEXT_PUBLIC_SUPABASE_URL) {
     throw new Error(
       "SUPABASE_PROJECT_URL is not defined in the environment variables",
     );
   }
 
-  if (!process.env.SUPABASE_PUBLIC_ANON_KEY) {
+  if (!process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) {
     throw new Error(
       "SUPABASE_PUBLIC_ANON_KEY is not defined in the environment variables",
     );
