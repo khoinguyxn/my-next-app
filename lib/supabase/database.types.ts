@@ -9,7 +9,50 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
-      [_ in never]: never
+      MenuCategory: {
+        Row: {
+          menuCategoryId: number
+          name: string
+        }
+        Insert: {
+          menuCategoryId?: number
+          name: string
+        }
+        Update: {
+          menuCategoryId?: number
+          name?: string
+        }
+        Relationships: []
+      }
+      MenuItem: {
+        Row: {
+          menuCategoryId: number
+          menuItemId: number
+          name: string
+          price: number
+        }
+        Insert: {
+          menuCategoryId: number
+          menuItemId?: number
+          name: string
+          price: number
+        }
+        Update: {
+          menuCategoryId?: number
+          menuItemId?: number
+          name?: string
+          price?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "MenuItems_menuCategoryId_fkey"
+            columns: ["menuCategoryId"]
+            isOneToOne: false
+            referencedRelation: "MenuCategory"
+            referencedColumns: ["menuCategoryId"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never

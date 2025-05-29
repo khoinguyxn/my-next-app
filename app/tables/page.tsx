@@ -1,5 +1,3 @@
-import { TypographyH3 } from '@/components/ui/typography-h3';
-
 export const Tables = () => {
   return <div className="flex h-full w-full items-center justify-center"></div>;
 };
