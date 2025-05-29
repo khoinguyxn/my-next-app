@@ -1,5 +1,5 @@
-import { MenuItem } from '@/domain/models/menu-item';
+import {MenuItem} from '@/domain/models/menu-item';
 
 export interface MenuItemRepository {
-  getAll(): Promise<MenuItem[]>;
+    getAll(): Promise<MenuItem[]>;
 }

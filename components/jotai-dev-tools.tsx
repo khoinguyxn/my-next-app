@@ -2,6 +2,6 @@
 
 import 'jotai-devtools/styles.css';
 
-import { DevTools } from 'jotai-devtools';
+import {DevTools} from 'jotai-devtools';
 
-export const JotaiDevTools = () => <DevTools theme="dark" />;
+export const JotaiDevTools = () => <DevTools theme="dark"/>;
