@@ -1,31 +1,12 @@
 "use client";
 
 import {MenuItem} from '@/domain/models/menu-item';
-import {MenuItemService} from '@/domain/services/menu-item-service';
-import {useQuery} from "@tanstack/react-query";
-import {container} from "@/infrastructure/container";
 import {Skeleton} from "@/components/ui/skeleton";
 import {Card, CardContent, CardTitle} from "@/components/ui/card";
 import {Button} from "@/components/ui/button";
 import {MenuCategories} from "@/components/menu/menu-categories";
 import {MenuItems} from "@/components/menu/menu-items";
-
-export function useMenuItems() {
-    const fetchMenuItems = (): Promise<MenuItem[]> => {
-        const menuItemService = container.get<MenuItemService>("MenuItemService");
-
-        return menuItemService.getAll();
-    };
-
-    return useQuery({
-        queryKey: ["menuItems"],
-        queryFn: fetchMenuItems,
-        staleTime: 5 * 6 * 1000,
-        refetchOnWindowFocus: true,
-        refetchInterval: 5 * 6 * 1000,
-        refetchIntervalInBackground: true
-    })
-}
+import useMenuItems from "@/hooks/use-menu-items";
 
 export default function Home() {
     const {data: menuItems, isLoading, isError} = useMenuItems();
