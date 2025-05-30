@@ -28,16 +28,13 @@ export function useMenuItems() {
 }
 
 export default function Home() {
-    const {data: menuItems, isLoading: menuItemsAreLoading, isError: menuItemsAreError} = useMenuItems();
-
-    const menuCategories = ["All", "Drinks", "Breakfast", "Lunch", "Dinner", "Desserts", "Snacks", "Pastries", "Salads", // "Soups",
-    ];
-
-    const isLoading = menuItemsAreLoading;
-    const isError = menuItemsAreError;
+    const {data: menuItems, isLoading, isError} = useMenuItems();
 
     if (isLoading) return <HomePageLoadingSkeleton/>;
     if (isError) return <div>Error loading menu items</div>;
+
+    const menuCategories = [...new Set(menuItems?.map((menuItem) => menuItem.menuCategory.name))];
+    menuCategories.unshift("All")
 
     return (<div className="flex flex-1 flex-col gap-5 items-start justify-start">
         <MenuCategories menuCategories={menuCategories}/>
@@ -66,19 +63,31 @@ const HomePageLoadingSkeleton = () => {
                 menuCategoryId: 0,
                 menuItemId: 0,
                 name: 'menuItem1',
-                price: 0
+                price: 0,
+                menuCategory: {
+                    menuCategoryId: 0,
+                    name: ''
+                }
             },
             {
                 menuCategoryId: 0,
                 menuItemId: 1,
                 name: 'menuItem2',
-                price: 0
+                price: 0,
+                menuCategory: {
+                    menuCategoryId: 0,
+                    name: ''
+                }
             },
             {
                 menuCategoryId: 0,
                 menuItemId: 2,
                 name: 'menuItem3',
-                price: 0
+                price: 0,
+                menuCategory: {
+                    menuCategoryId: 0,
+                    name: ''
+                }
             },
         ]
 

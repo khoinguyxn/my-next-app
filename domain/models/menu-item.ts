@@ -1,3 +1,7 @@
-import {Database} from '@/infrastructure/supabase/database.types';
+import {MergeDeep} from "type-fest";
+import {Tables} from "@/infrastructure/supabase/database.types";
+import {MenuCategory} from "@/domain/models/menu-category";
 
-export type MenuItem = Database["public"]["Tables"]["MenuItem"]["Row"];
+export type MenuItem = MergeDeep<Tables<"MenuItem">, {
+    menuCategory: MenuCategory
+}>;

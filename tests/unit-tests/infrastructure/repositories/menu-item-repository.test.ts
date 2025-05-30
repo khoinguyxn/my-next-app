@@ -33,13 +33,21 @@ describe('MenuItemRepositoryImpl', () => {
                     menuItemId: 1,
                     name: 'Espresso',
                     price: 4.2,
-                    menuCategoryId: 1
+                    menuCategoryId: 0,
+                    menuCategory: {
+                        menuCategoryId: 0,
+                        name: ''
+                    }
                 },
                 {
                     menuItemId: 2,
                     name: 'Latte',
                     price: 4.8,
-                    menuCategoryId: 1
+                    menuCategoryId: 0,
+                    menuCategory: {
+                        menuCategoryId: 0,
+                        name: ''
+                    }
                 }
             ];
 
@@ -54,7 +62,7 @@ describe('MenuItemRepositoryImpl', () => {
             // Assert
             expect(result).toEqual(mockMenuItems);
             expect(mockSupabaseClient.from).toHaveBeenCalledWith('MenuItem');
-            expect(mockSelect).toHaveBeenCalledWith('*');
+            expect(mockSelect).toHaveBeenCalledWith("*, menuCategory: MenuCategory(*)");
         });
 
         it('should throw an error when Supabase returns error', async () => {
@@ -75,7 +83,7 @@ describe('MenuItemRepositoryImpl', () => {
             // Act and Assert
             await expect(menuItemRepository.getAll()).rejects.toEqual(mockError);
             expect(mockSupabaseClient.from).toHaveBeenCalledWith('MenuItem');
-            expect(mockSelect).toHaveBeenCalledWith('*');
+            expect(mockSelect).toHaveBeenCalledWith("*, menuCategory: MenuCategory(*)");
         });
 
         it('should return null when Supabase returns null data', async () => {
@@ -91,7 +99,7 @@ describe('MenuItemRepositoryImpl', () => {
             // Assert
             expect(result).toBeNull();
             expect(mockSupabaseClient.from).toHaveBeenCalledWith('MenuItem');
-            expect(mockSelect).toHaveBeenCalledWith('*');
+            expect(mockSelect).toHaveBeenCalledWith("*, menuCategory: MenuCategory(*)");
         });
     });
 });

@@ -11,7 +11,7 @@ export class MenuItemRepositoryImpl implements MenuItemRepository {
     }
 
     async getAll(): Promise<MenuItem[]> {
-        const {data, error} = await this.supabase.from("MenuItem").select("*");
+        const {data, error} = await this.supabase.from("MenuItem").select("*, menuCategory: MenuCategory(*)");
         if (error) throw error;
         return data;
     }

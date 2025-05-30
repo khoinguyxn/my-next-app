@@ -31,13 +31,21 @@ describe('MenuItemServices', () => {
                     menuItemId: 1,
                     name: 'Espresso',
                     price: 4.2,
-                    menuCategoryId: 1
+                    menuCategoryId: 0,
+                    menuCategory: {
+                        menuCategoryId: 0,
+                        name: ''
+                    }
                 },
                 {
                     menuItemId: 2,
                     name: 'Latte',
                     price: 4.8,
-                    menuCategoryId: 1
+                    menuCategoryId: 0,
+                    menuCategory: {
+                        menuCategoryId: 0,
+                        name: ''
+                    }
                 }
             ]
 
