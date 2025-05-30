@@ -1,9 +1,12 @@
-import {PlusIcon} from 'lucide-react';
+import {MinusIcon, PlusIcon} from 'lucide-react';
 
 import {MenuItem} from '@/domain/models/menu-item';
 
 import {Button} from '../ui/button';
 import {Card, CardContent, CardTitle} from '../ui/card';
+import {Popover, PopoverContent, PopoverTrigger} from "@/components/ui/popover";
+import {Label} from "@/components/ui/label";
+import {useState} from "react";
 
 export const MenuItems = ({menuItems}: { menuItems: MenuItem[] }) => {
     return (<div
@@ -15,6 +18,8 @@ export const MenuItems = ({menuItems}: { menuItems: MenuItem[] }) => {
 };
 
 const MenuItemCard = ({menuItem}: { menuItem: MenuItem }) => {
+    const [menuItemQuantity, setMenuItemQuantity] = useState(1);
+
     return (<Card className="flex-row p-2.5 items-center">
         <div className="flex flex-col gap-2.5">
             <CardTitle>{menuItem.name}</CardTitle>
@@ -22,8 +27,30 @@ const MenuItemCard = ({menuItem}: { menuItem: MenuItem }) => {
                 <span>{menuItem.price.toFixed(2)}</span>
             </CardContent>
         </div>
-        <Button className="ml-auto" variant="outline" size="icon">
-            <PlusIcon/>
-        </Button>
+        <Popover>
+            <PopoverTrigger asChild>
+                <Button className="ml-auto" variant="outline" size="icon">
+                    <PlusIcon/>
+                </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-fit">
+                <div className="flex flex-col gap-2.5">
+                    <div className="flex flex-row items-center gap-2.5">
+                        <Button variant="outline" size="icon" onClick={() => setMenuItemQuantity(menuItemQuantity - 1)}
+                                disabled={menuItemQuantity === 1}>
+                            <MinusIcon/>
+                        </Button>
+                        <Label htmlFor="menuItemQuantity">{menuItemQuantity}</Label>
+                        <Button variant="outline" size="icon" onClick={() => setMenuItemQuantity(menuItemQuantity + 1)}
+                                disabled={menuItemQuantity === 10}>
+                            <PlusIcon/>
+                        </Button>
+                    </div>
+                    <Button>
+                        <Label htmlFor="orderWithQuantity">Order</Label>
+                    </Button>
+                </div>
+            </PopoverContent>
+        </Popover>
     </Card>);
 };
