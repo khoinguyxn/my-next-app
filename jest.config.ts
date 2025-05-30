@@ -1,12 +1,18 @@
-import {createDefaultEsmPreset, type JestConfigWithTsJest} from 'ts-jest'
+import type {Config} from 'jest';
+import nextJest from 'next/jest';
 
-const presetConfig = createDefaultEsmPreset({})
+const createJestConfig = nextJest({
+    dir: './',
+});
 
-const jestConfig: JestConfigWithTsJest = {
-    ...presetConfig,
+const config: Config = {
+    setupFilesAfterEnv: ['<rootDir>/jest.setup.ts'],
+    testEnvironment: 'jest-environment-jsdom',
+    preset: 'ts-jest',
     moduleNameMapper: {
         '^@/(.*)$': '<rootDir>/$1',
-    }
-}
+    },
+    testPathIgnorePatterns: ['<rootDir>/node_modules/', '<rootDir>/.next/', '<rootDir>/e2e/', '<rootDir>/features/']
+};
 
-export default jestConfig
+export default createJestConfig(config);
