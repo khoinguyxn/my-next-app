@@ -3,7 +3,7 @@ import {MenuItem} from "@/domain/models/menu-item";
 import {MenuItemRepository} from "@/domain/repositories/menu-item-repository";
 import {Container} from "inversify";
 
-describe('MenuItemServices', () => {
+describe('MenuItemService', () => {
     let menuItemService: MenuItemService;
     let mockMenuItemRepository: MenuItemRepository;
     let mockRepositoryGetAll: jest.SpyInstance;
