@@ -1,3 +1,3 @@
 import {Tables} from "@/infrastructure/supabase/database.types";
 
-export type PosTable = Tables<"Table">
+export type Table = Tables<"Table">

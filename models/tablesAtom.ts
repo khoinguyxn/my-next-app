@@ -1,27 +1,25 @@
 import {atomWithStorage} from "jotai/utils";
-import {TableSeatEnum} from "@/domain/models/tables/table-seats";
-import {TableAvailabilityEnum} from "@/domain/models/tables/table-availabilities";
-import {Table} from "@/domain/models/tables/table";
+import type {Table} from "@/domain/models/tables/table";
 
 export const tablesAtom = atomWithStorage<Table[]>("tables", [
     {
         tableNumber: 0,
-        tableSeats: TableSeatEnum[2],
-        tableAvailability: TableAvailabilityEnum.Available
+        tableSeats: '2',
+        tableAvailability: 'Available'
     },
     {
         tableNumber: 1,
-        tableSeats: TableSeatEnum[6],
-        tableAvailability: TableAvailabilityEnum.Occupied
+        tableSeats: '6',
+        tableAvailability: 'Occupied'
     },
     {
         tableNumber: 2,
-        tableSeats: TableSeatEnum[2],
-        tableAvailability: TableAvailabilityEnum.Available
+        tableSeats: '2',
+        tableAvailability: 'Available'
     },
     {
         tableNumber: 3,
-        tableSeats: TableSeatEnum[4],
-        tableAvailability: TableAvailabilityEnum.Available
+        tableSeats: '4',
+        tableAvailability: 'Available'
     }
 ])

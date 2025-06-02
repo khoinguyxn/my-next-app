@@ -8,7 +8,7 @@ import {useCallback, useMemo} from "react";
 import {tablesAtom} from "@/models/tablesAtom";
 import {useAtom} from "jotai";
 import {TableAvailability, TableAvailabilityEnum} from "@/domain/models/tables/table-availabilities";
-import type {PosTable} from "@/domain/models/tables/table";
+import type {Table} from "@/domain/models/tables/table";
 import {TableSeatEnum} from "@/domain/models/tables/table-seats";
 
 type CountOfTablesByAvailability = {
@@ -56,7 +56,7 @@ const TableAvailabilityLegend = ({countsOfTablesByAvailability}: {
 )
 
 const TableArrangementGrid = ({tables, handleUpdateTableAvailability}: {
-    tables: PosTable[],
+    tables: Table[],
     handleUpdateTableAvailability: (tableNumber: number, tableAvailability: TableAvailability) => void
 }) => (
     <div className="grid grid-cols-5 grid-flow-row gap-x-5 gap-y-10">
@@ -68,7 +68,7 @@ const TableArrangementGrid = ({tables, handleUpdateTableAvailability}: {
 )
 
 const TableAndSeats = ({table, handleUpdateTableAvailability}: {
-    table: PosTable,
+    table: Table,
     handleUpdateTableAvailability: (tableNumber: number, tableAvailability: TableAvailability) => void
 }) => (
     <Popover>
@@ -94,7 +94,7 @@ const TableAndSeats = ({table, handleUpdateTableAvailability}: {
     </Popover>
 )
 
-const Seats = ({table}: { table: PosTable }) => (
+const Seats = ({table}: { table: Table }) => (
     <>
         {Array.from({length: Number(TableSeatEnum[table.tableSeats]) / 2}).map((_, index) => (
             <Seat key={index}/>
