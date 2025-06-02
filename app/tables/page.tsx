@@ -4,12 +4,13 @@ import {Circle} from "lucide-react";
 import {Label} from "@/components/ui/label";
 import {Popover, PopoverContent, PopoverTrigger} from "@/components/ui/popover";
 import {Button} from "@/components/ui/button";
-import {useCallback, useMemo} from "react";
+import {useCallback, useEffect, useMemo} from "react";
 import {tablesAtom} from "@/models/tablesAtom";
 import {useAtom} from "jotai";
 import {TableAvailability, TableAvailabilityEnum} from "@/domain/models/tables/table-availabilities";
 import type {Table} from "@/domain/models/tables/table";
 import {TableSeatEnum} from "@/domain/models/tables/table-seats";
+import useTables from "@/hooks/use-tables";
 
 type CountOfTablesByAvailability = {
     availability: TableAvailability,
@@ -18,6 +19,11 @@ type CountOfTablesByAvailability = {
 
 export default function TablesPage() {
     const [tables, setTables] = useAtom(tablesAtom);
+    const {data: tablesData, isLoading, isError} = useTables();
+
+    useEffect(() => {
+        if (tablesData) setTables(tablesData)
+    }, [tablesData, setTables])
 
     const handleUpdateTableAvailability = useCallback((tableNumber: number, tableAvailability: TableAvailability) => {
         setTables((prev) => prev.map(table => table.tableNumber === tableNumber ?
@@ -33,6 +39,9 @@ export default function TablesPage() {
         }
     }), [tables])
 
+    if (isLoading) return <div>Loading...</div>;
+    if (isError) return <div>Error loading tables</div>;
+
     return <div className="flex flex-1 flex-col gap-7.5">
         <TableAvailabilityLegend countsOfTablesByAvailability={countsOfTablesByAvailability}/>
         <TableArrangementGrid tables={tables} handleUpdateTableAvailability={handleUpdateTableAvailability}/>
@@ -45,7 +54,8 @@ const TableAvailabilityLegend = ({countsOfTablesByAvailability}: {
     <div className="ml-auto flex items-center h-fit gap-5">
         {countsOfTablesByAvailability.map((countOfTablesByAvailability) => (
             <div key={countOfTablesByAvailability.availability} className="flex items-center gap-2.5">
-                <Circle/>
+                <Circle
+                    color={countOfTablesByAvailability.availability === TableAvailabilityEnum.Available ? "var(--secondary)" : "var(--primary)"}/>
                 <Label htmlFor={countOfTablesByAvailability.availability}>
                     <span>{`${countOfTablesByAvailability.availability}:`}</span>
                     <span>{countOfTablesByAvailability.count}</span>
