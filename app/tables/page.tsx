@@ -5,21 +5,18 @@ import {Label} from "@/components/ui/label";
 import {Popover, PopoverContent, PopoverTrigger} from "@/components/ui/popover";
 import {Button} from "@/components/ui/button";
 import {useCallback, useMemo} from "react";
-import {TableAvailability, tablesAtom, TableSeats} from "@/models/tables";
+import {tablesAtom} from "@/models/tablesAtom";
 import {useAtom} from "jotai";
-
-export type Table = {
-    tableNumber: number;
-    tableSeats: TableSeats;
-    tableAvailability: TableAvailability;
-}
+import {TableAvailability, TableAvailabilityEnum} from "@/domain/models/tables/table-availabilities";
+import type {PosTable} from "@/domain/models/tables/table";
+import {TableSeatEnum} from "@/domain/models/tables/table-seats";
 
 type CountOfTablesByAvailability = {
     availability: TableAvailability,
     count: number,
 }
 
-export default function Tables() {
+export default function TablesPage() {
     const [tables, setTables] = useAtom(tablesAtom);
 
     const handleUpdateTableAvailability = useCallback((tableNumber: number, tableAvailability: TableAvailability) => {
@@ -29,7 +26,7 @@ export default function Tables() {
         ))
     }, [setTables])
 
-    const countsOfTablesByAvailability = useMemo(() => Object.entries(TableAvailability).map(([key, value]) => {
+    const countsOfTablesByAvailability = useMemo(() => Object.entries(TableAvailabilityEnum).map(([key, value]) => {
         return {
             availability: key as TableAvailability,
             count: tables.filter(table => table.tableAvailability === value).length
@@ -59,7 +56,7 @@ const TableAvailabilityLegend = ({countsOfTablesByAvailability}: {
 )
 
 const TableArrangementGrid = ({tables, handleUpdateTableAvailability}: {
-    tables: Table[],
+    tables: PosTable[],
     handleUpdateTableAvailability: (tableNumber: number, tableAvailability: TableAvailability) => void
 }) => (
     <div className="grid grid-cols-5 grid-flow-row gap-x-5 gap-y-10">
@@ -71,7 +68,7 @@ const TableArrangementGrid = ({tables, handleUpdateTableAvailability}: {
 )
 
 const TableAndSeats = ({table, handleUpdateTableAvailability}: {
-    table: Table,
+    table: PosTable,
     handleUpdateTableAvailability: (tableNumber: number, tableAvailability: TableAvailability) => void
 }) => (
     <Popover>
@@ -79,25 +76,30 @@ const TableAndSeats = ({table, handleUpdateTableAvailability}: {
             <div
                 className="flex flex-1 flex-col gap-2.5 items-center bg-inherit text-black shadow-none hover:bg-inherit h-fit p-0">
                 <div className="flex justify-center gap-2.5 w-full">
-                    {Array.from({length: table.tableSeats / 2}).map((_, index) => (
-                        <Seat key={index}/>
-                    ))}
+                    {<Seats table={table}/>}
                 </div>
                 <Table tableNumber={table.tableNumber} tableAvailability={table.tableAvailability}/>
                 <div className="flex justify-center gap-2.5 w-full">
-                    {Array.from({length: table.tableSeats / 2}).map((_, index) => (
-                        <Seat key={index}/>
-                    ))}
+                    {<Seats table={table}/>}
                 </div>
             </div>
         </PopoverTrigger>
         <PopoverContent
-            className={`w-fit ${table.tableAvailability === TableAvailability.Occupied ? "hidden" : ""}`}>
-            <Button onClick={() => handleUpdateTableAvailability(table.tableNumber, TableAvailability.Occupied)}>
+            className={`w-fit ${table.tableAvailability === TableAvailabilityEnum.Occupied ? "hidden" : ""}`}>
+            <Button
+                onClick={() => handleUpdateTableAvailability(table.tableNumber, TableAvailabilityEnum.Occupied)}>
                 Check in
             </Button>
         </PopoverContent>
     </Popover>
+)
+
+const Seats = ({table}: { table: PosTable }) => (
+    <>
+        {Array.from({length: Number(TableSeatEnum[table.tableSeats]) / 2}).map((_, index) => (
+            <Seat key={index}/>
+        ))}
+    </>
 )
 
 const Seat = () => (
@@ -109,7 +111,7 @@ const Table = ({tableNumber, tableAvailability}: {
     tableAvailability: TableAvailability
 }) => (
     <div
-        className={`w-full ${tableAvailability === TableAvailability.Available ? "bg-secondary hover:bg-border" : "bg-primary"} p-2.5 rounded-lg`}>
+        className={`w-full ${tableAvailability === TableAvailabilityEnum.Available ? "bg-secondary hover:bg-border" : "bg-primary"} p-2.5 rounded-lg`}>
         <div className="bg-white py-2.5 flex flex-col gap-2.5 items-center">
             <Label htmlFor={`table${tableNumber}`}>{`Table ${tableNumber}`}</Label>
             <span className="text-sm">{tableAvailability}</span>
