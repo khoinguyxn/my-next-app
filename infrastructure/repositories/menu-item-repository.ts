@@ -1,3 +1,4 @@
+import 'reflect-metadata';
 import {inject, injectable} from 'inversify';
 
 import {MenuItem} from '@/domain/models/menu-item';

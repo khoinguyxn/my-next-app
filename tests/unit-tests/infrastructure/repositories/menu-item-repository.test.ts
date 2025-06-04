@@ -1,3 +1,4 @@
+import 'reflect-metadata';
 import {Container} from 'inversify';
 import {MenuItemRepository} from '@/domain/repositories/menu-item-repository';
 import {MenuItemRepositoryImpl} from '@/infrastructure/repositories/menu-item-repository';

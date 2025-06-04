@@ -1,3 +1,4 @@
+import 'reflect-metadata';
 import {MenuItemService, MenuItemServiceImpl} from "@/domain/services/menu-item-service";
 import {MenuItem} from "@/domain/models/menu-item";
 import {MenuItemRepository} from "@/domain/repositories/menu-item-repository";

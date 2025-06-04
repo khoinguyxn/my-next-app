@@ -1,3 +1,4 @@
+import "reflect-metadata"
 import {inject, injectable} from 'inversify';
 
 import type {MenuItemRepository} from "../repositories/menu-item-repository";

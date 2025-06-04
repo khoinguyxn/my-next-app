@@ -1,3 +1,4 @@
+import 'reflect-metadata';
 import {inject, injectable} from "inversify";
 
 import {TableRepository} from "@/domain/repositories/table-repository";
