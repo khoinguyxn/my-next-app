@@ -15,7 +15,7 @@ import { RESET } from "jotai/utils";
 import { useRouter } from "next/navigation";
 import { selectedTableAtom } from "@/models/tables-atom";
 
-export const YourOrderSheet = () => {
+export const OrderSummarySheet = () => {
   const orderItems = useAtomValue(orderItemAtom);
   const menuItems = useAtomValue(menuItemAtom);
   const selectedTable = useAtomValue(selectedTableAtom);

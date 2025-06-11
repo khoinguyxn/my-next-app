@@ -19,6 +19,7 @@ import type { Table } from "@/domain/models/tables/table";
 import { TableSeatEnum } from "@/domain/models/tables/table-seats";
 import useTables from "@/hooks/use-tables";
 import { useRouter } from "next/navigation";
+import { PageHeader } from "@/components/page-header";
 
 type CountOfTablesByAvailability = {
   availability: TableAvailability;
@@ -69,15 +70,18 @@ export default function TablesPage() {
   if (isError) return <div>Error loading tables</div>;
 
   return (
-    <div className="flex flex-1 flex-col gap-7.5">
-      <TableAvailabilityLegend
-        countsOfTablesByAvailability={countsOfTablesByAvailability}
-      />
-      <TableArrangementGrid
-        tables={tables}
-        handleUpdateTableAvailability={handleUpdateTableAvailability}
-      />
-    </div>
+    <>
+      <PageHeader />
+      <div className="flex flex-1 flex-col gap-7.5">
+        <TableAvailabilityLegend
+          countsOfTablesByAvailability={countsOfTablesByAvailability}
+        />
+        <TableArrangementGrid
+          tables={tables}
+          handleUpdateTableAvailability={handleUpdateTableAvailability}
+        />
+      </div>
+    </>
   );
 }
 

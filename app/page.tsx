@@ -7,6 +7,10 @@ import { Button } from "@/components/ui/button";
 import { MenuCategories } from "@/components/menu/menu-categories";
 import { MenuItems } from "@/components/menu/menu-items";
 import useMenuItems from "@/hooks/use-menu-items";
+import { PageHeader } from "@/components/page-header";
+import { ShoppingBasketIcon } from "lucide-react";
+import { Sheet, SheetTrigger } from "@/components/ui/sheet";
+import { OrderSummarySheet } from "@/components/menu/order-summary-sheet";
 
 export default function Home() {
   const { data: menuItems, isLoading, isError } = useMenuItems();
@@ -20,10 +24,20 @@ export default function Home() {
   menuCategories.unshift("All");
 
   return (
-    <div className="flex flex-1 flex-col items-start justify-start gap-5">
-      <MenuCategories menuCategories={menuCategories} />
-      <MenuItems menuItems={menuItems || []} />
-    </div>
+    <Sheet>
+      <PageHeader>
+        <SheetTrigger asChild>
+          <Button variant="outline" size="icon">
+            <ShoppingBasketIcon />
+          </Button>
+        </SheetTrigger>
+      </PageHeader>
+      <div className="flex flex-1 flex-col items-start justify-start gap-5">
+        <MenuCategories menuCategories={menuCategories} />
+        <MenuItems menuItems={menuItems || []} />
+      </div>
+      <OrderSummarySheet />
+    </Sheet>
   );
 }
 

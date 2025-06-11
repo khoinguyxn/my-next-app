@@ -10,8 +10,6 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { Label } from "@/components/ui/label";
-import { Sheet, SheetTrigger } from "@/components/ui/sheet";
-import { YourOrderSheet } from "@/components/menu/your-order-sheet";
 import { useAtom } from "jotai";
 import { menuItemWithQuantityAtomFamily } from "@/models/menu-item-atom";
 import { orderItemAtom } from "@/models/order-item-atom";
@@ -52,51 +50,46 @@ const MenuItemCard = ({ menuItem }: { menuItem: MenuItem }) => {
   };
 
   return (
-    <Sheet>
-      <Card className="flex-row items-center p-2.5">
-        <div className="flex flex-col gap-2.5">
-          <CardTitle>{menuItem.name}</CardTitle>
-          <CardContent className="p-0">
-            <span>{menuItem.price.toFixed(2)}</span>
-          </CardContent>
-        </div>
-        <Popover>
-          <PopoverTrigger asChild>
-            <Button className="ml-auto" variant="outline" size="icon">
-              <PlusIcon />
-            </Button>
-          </PopoverTrigger>
-          <PopoverContent className="w-fit">
-            <div className="flex flex-col gap-2.5">
-              <div className="flex flex-row items-center gap-2.5">
-                <Button
-                  variant="outline"
-                  size="icon"
-                  onClick={() => setMenuItemQuantity(menuItemQuantity - 1)}
-                  disabled={menuItemQuantity === 1}
-                >
-                  <MinusIcon />
-                </Button>
-                <span>{menuItemQuantity}</span>
-                <Button
-                  variant="outline"
-                  size="icon"
-                  onClick={() => setMenuItemQuantity(menuItemQuantity + 1)}
-                  disabled={menuItemQuantity === 10}
-                >
-                  <PlusIcon />
-                </Button>
-              </div>
-              <SheetTrigger asChild>
-                <Button onClick={handleAddOrderItem}>
-                  <Label htmlFor="orderWithQuantity">Order</Label>
-                </Button>
-              </SheetTrigger>
+    <Card className="flex-row items-center p-2.5">
+      <div className="flex flex-col gap-2.5">
+        <CardTitle>{menuItem.name}</CardTitle>
+        <CardContent className="p-0">
+          <span>{menuItem.price.toFixed(2)}</span>
+        </CardContent>
+      </div>
+      <Popover>
+        <PopoverTrigger asChild>
+          <Button className="ml-auto" variant="outline" size="icon">
+            <PlusIcon />
+          </Button>
+        </PopoverTrigger>
+        <PopoverContent className="w-fit">
+          <div className="flex flex-col gap-2.5">
+            <div className="flex flex-row items-center gap-2.5">
+              <Button
+                variant="outline"
+                size="icon"
+                onClick={() => setMenuItemQuantity(menuItemQuantity - 1)}
+                disabled={menuItemQuantity === 1}
+              >
+                <MinusIcon />
+              </Button>
+              <span>{menuItemQuantity}</span>
+              <Button
+                variant="outline"
+                size="icon"
+                onClick={() => setMenuItemQuantity(menuItemQuantity + 1)}
+                disabled={menuItemQuantity === 10}
+              >
+                <PlusIcon />
+              </Button>
             </div>
-          </PopoverContent>
-        </Popover>
-      </Card>
-      <YourOrderSheet />
-    </Sheet>
+            <Button onClick={handleAddOrderItem}>
+              <Label htmlFor="orderWithQuantity">Order</Label>
+            </Button>
+          </div>
+        </PopoverContent>
+      </Popover>
+    </Card>
   );
 };
