@@ -9,8 +9,8 @@ import {
 } from "@/components/ui/popover";
 import { Button } from "@/components/ui/button";
 import { useCallback, useEffect, useMemo } from "react";
-import { tablesAtom } from "@/models/tablesAtom";
-import { useAtom } from "jotai";
+import { selectedTableAtom, tablesAtom } from "@/models/tables-atom";
+import { useAtom, useSetAtom } from "jotai";
 import {
   TableAvailability,
   TableAvailabilityEnum,
@@ -18,6 +18,7 @@ import {
 import type { Table } from "@/domain/models/tables/table";
 import { TableSeatEnum } from "@/domain/models/tables/table-seats";
 import useTables from "@/hooks/use-tables";
+import { useRouter } from "next/navigation";
 
 type CountOfTablesByAvailability = {
   availability: TableAvailability;
@@ -26,27 +27,30 @@ type CountOfTablesByAvailability = {
 
 export default function TablesPage() {
   const [tables, setTables] = useAtom(tablesAtom);
+  const setSelectedTable = useSetAtom(selectedTableAtom);
   const { data: tablesData, isLoading, isError } = useTables();
 
-  useEffect(() => {
-    setTables((current) => {
-      if (current.length === 0 && tablesData) return tablesData;
+  const router = useRouter();
 
-      return current;
-    });
-  }, [tablesData, setTables]);
+  useEffect(() => {
+    if (tables.length > 0 || !tablesData) return;
+
+    setTables(tablesData);
+  }, [tablesData, setTables, tables.length]);
 
   const handleUpdateTableAvailability = useCallback(
-    (tableNumber: number, tableAvailability: TableAvailability) => {
+    (updatedTable: Table) => {
       setTables((prev) =>
         prev.map((table) =>
-          table.tableNumber === tableNumber
-            ? { ...table, tableAvailability }
+          table.tableNumber === updatedTable.tableNumber
+            ? { ...table, tableAvailability: updatedTable.tableAvailability }
             : table,
         ),
       );
+      setSelectedTable(updatedTable);
+      router.push("/");
     },
-    [setTables],
+    [setTables, setSelectedTable, router],
   );
 
   const countsOfTablesByAvailability = useMemo(
@@ -110,10 +114,7 @@ const TableArrangementGrid = ({
   handleUpdateTableAvailability,
 }: {
   tables: Table[];
-  handleUpdateTableAvailability: (
-    tableNumber: number,
-    tableAvailability: TableAvailability,
-  ) => void;
+  handleUpdateTableAvailability: (updatedTable: Table) => void;
 }) => (
   <div className="grid grid-flow-row grid-cols-5 gap-x-5 gap-y-10">
     {tables.map((table) => (
@@ -131,10 +132,7 @@ const TableAndSeats = ({
   handleUpdateTableAvailability,
 }: {
   table: Table;
-  handleUpdateTableAvailability: (
-    tableNumber: number,
-    tableAvailability: TableAvailability,
-  ) => void;
+  handleUpdateTableAvailability: (updatedTable: Table) => void;
 }) => (
   <Popover>
     <PopoverTrigger asChild>
@@ -156,10 +154,10 @@ const TableAndSeats = ({
     >
       <Button
         onClick={() =>
-          handleUpdateTableAvailability(
-            table.tableNumber,
-            TableAvailabilityEnum.Occupied,
-          )
+          handleUpdateTableAvailability({
+            ...table,
+            tableAvailability: TableAvailabilityEnum.Occupied,
+          })
         }
       >
         Check in

@@ -12,10 +12,16 @@ import {
 import { MenuItem } from "@/domain/models/menu-item";
 import { OrderItemWithInsert } from "@/domain/models/orders/order-item";
 import { RESET } from "jotai/utils";
+import { useRouter } from "next/navigation";
+import { selectedTableAtom } from "@/models/tables-atom";
 
 export const YourOrderSheet = () => {
   const orderItems = useAtomValue(orderItemAtom);
   const menuItems = useAtomValue(menuItemAtom);
+  const selectedTable = useAtomValue(selectedTableAtom);
+  const router = useRouter();
+
+  const handleSelectTable = () => router.push("/tables");
 
   return (
     <SheetContent className="flex flex-col gap-5 p-5">
@@ -26,9 +32,11 @@ export const YourOrderSheet = () => {
         <div className="flex flex-row">
           <div className="mr-auto flex flex-row items-center gap-2.5">
             <span>Table:</span>
-            <span>__</span>
+            <span>
+              {selectedTable === undefined ? "__" : selectedTable.tableNumber}
+            </span>
           </div>
-          <Button variant="outline" size="icon">
+          <Button variant="outline" size="icon" onClick={handleSelectTable}>
             <EditIcon />
           </Button>
         </div>
