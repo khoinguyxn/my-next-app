@@ -113,7 +113,7 @@ const OrderItemCard = ({
             variant="outline"
             size="icon"
             onClick={() => handleUpdateMenuItemQuantity(-1)}
-            disabled={orderItem.quantity === 1}
+            disabled={menuItemWithQuantity === 1}
           >
             <MinusIcon />
           </Button>
@@ -126,7 +126,7 @@ const OrderItemCard = ({
             <PlusIcon />
           </Button>
         </div>
-        <span>{`$ ${(menuItem.price * orderItem.quantity).toFixed(2)}`}</span>
+        <span>{`$ ${(menuItem.price * menuItemWithQuantity).toFixed(2)}`}</span>
       </div>
     </Card>
   );
