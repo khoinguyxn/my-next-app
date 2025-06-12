@@ -32,7 +32,7 @@ export default function Home() {
           </Button>
         </SheetTrigger>
       </PageHeader>
-      <div className="flex flex-1 flex-col items-start justify-start gap-5">
+      <div className="flex flex-1 flex-col gap-5">
         <MenuCategories menuCategories={menuCategories} />
         <MenuItems menuItems={menuItems || []} />
       </div>

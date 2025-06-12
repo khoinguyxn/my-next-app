@@ -72,7 +72,7 @@ export default function TablesPage() {
   return (
     <>
       <PageHeader />
-      <div className="flex flex-1 flex-col gap-7.5">
+      <div className="flex flex-1 flex-col gap-5">
         <TableAvailabilityLegend
           countsOfTablesByAvailability={countsOfTablesByAvailability}
         />
