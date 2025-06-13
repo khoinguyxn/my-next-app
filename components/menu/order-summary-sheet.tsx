@@ -19,14 +19,19 @@ import { OrderItemWithInsert } from "@/domain/models/orders/order-item";
 import { RESET } from "jotai/utils";
 import { useRouter } from "next/navigation";
 import { selectedTableAtom } from "@/models/tables-atom";
-import { useState } from "react";
+import { Dispatch, SetStateAction } from "react";
 import { Label } from "@/components/ui/label";
 
-export const OrderSummarySheet = () => {
+export const OrderSummarySheet = ({
+  isCheckedOut,
+  setIsCheckedOut,
+}: {
+  isCheckedOut: boolean;
+  setIsCheckedOut: Dispatch<SetStateAction<boolean>>;
+}) => {
   const orderItems = useAtomValue(orderItemAtom);
   const menuItems = useAtomValue(menuItemAtom);
   const selectedTable = useAtomValue(selectedTableAtom);
-  const [isCheckedOut, setIsCheckedOut] = useState(false);
   const router = useRouter();
 
   const handleSelectTable = () => router.push("/tables");
