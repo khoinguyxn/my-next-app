@@ -19,7 +19,7 @@ import { OrderItemWithInsert } from "@/domain/models/orders/order-item";
 import { RESET } from "jotai/utils";
 import { useRouter } from "next/navigation";
 import { selectedTableAtom } from "@/models/tables-atom";
-import { Dispatch, SetStateAction, useState } from "react";
+import { ChangeEvent, Dispatch, SetStateAction, useState } from "react";
 import { Label } from "@/components/ui/label";
 import {
   Popover,
@@ -27,6 +27,13 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import Image from "next/image";
+import {
+  format,
+  InputNumberFormat,
+  NumberFormat,
+  NumberFormatOptions,
+} from "@react-input/number-format";
+import { cn } from "@/lib/utils";
 
 export const OrderSummarySheet = ({
   isCheckedOut,
@@ -201,6 +208,17 @@ const OrderReceiptCard = ({
   orderItems: OrderItemWithInsert[];
   menuItems: MenuItem[];
 }) => {
+  const currencyInputOptions: NumberFormatOptions = {
+    format: "currency",
+    currency: "USD",
+    maximumFractionDigits: 2,
+  };
+
+  const currencyFormat = new NumberFormat(currencyInputOptions);
+
+  const defaultReceivedAmount = format(0, currencyInputOptions);
+  const [received, setReceived] = useState(defaultReceivedAmount);
+
   const getSubtotal = () => {
     const menuItemPrices = new Map<number, number>(
       menuItems.map(({ menuItemId, price }) => [menuItemId, price]),
@@ -227,18 +245,54 @@ const OrderReceiptCard = ({
     Total: getTotal(),
   };
 
+  const getChange = () => {
+    const unformattedReceived = Number(currencyFormat.unformat(received));
+
+    if (unformattedReceived < getTotal()) return 0;
+
+    return unformattedReceived - getTotal();
+  };
+
   return (
     <Card className="gap-5 p-5">
       <CardTitle>Order Receipt</CardTitle>
       <CardContent className="flex flex-col gap-1.5 p-0">
         {Object.entries(orderReceiptItems).map(([key, value]) => (
           <div key={key} className="flex flex-row justify-between">
-            <Label className="italic" htmlFor="Subtotal">
+            <Label className="italic" htmlFor={key}>
               {key}
             </Label>
-            <span>{`$ ${value.toFixed(2)}`}</span>
+            <span>{`$${value.toFixed(2)}`}</span>
           </div>
         ))}
+        <div className="flex flex-row justify-between gap-2.5">
+          <Label className="italic" htmlFor="Received">
+            Received
+          </Label>
+          <InputNumberFormat
+            locales="en-US"
+            format="currency"
+            currency="USD"
+            maximumFractionDigits={2}
+            maximumIntegerDigits={4}
+            value={received}
+            onChange={(event: ChangeEvent<HTMLInputElement>) =>
+              setReceived(event.target.value)
+            }
+            placeholder="$0.00"
+            className={cn(
+              "file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input flex h-9 min-w-0 rounded-md border bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm",
+              "focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]",
+              "aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive w-fit text-right",
+            )}
+          />
+        </div>
+        <div className="flex flex-row justify-between">
+          <Label className="italic" htmlFor="Received">
+            Change
+          </Label>
+          <span>{`$${getChange().toFixed(2)}`}</span>
+        </div>
       </CardContent>
     </Card>
   );
