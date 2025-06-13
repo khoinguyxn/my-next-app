@@ -19,8 +19,14 @@ import { OrderItemWithInsert } from "@/domain/models/orders/order-item";
 import { RESET } from "jotai/utils";
 import { useRouter } from "next/navigation";
 import { selectedTableAtom } from "@/models/tables-atom";
-import { Dispatch, SetStateAction } from "react";
+import { Dispatch, SetStateAction, useState } from "react";
 import { Label } from "@/components/ui/label";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import Image from "next/image";
 
 export const OrderSummarySheet = ({
   isCheckedOut,
@@ -32,9 +38,20 @@ export const OrderSummarySheet = ({
   const orderItems = useAtomValue(orderItemAtom);
   const menuItems = useAtomValue(menuItemAtom);
   const selectedTable = useAtomValue(selectedTableAtom);
+  const [isPopoverOpen, setIsPopoverOpen] = useState(false);
+
   const router = useRouter();
 
   const handleSelectTable = () => router.push("/tables");
+
+  const handleCheckout = () => {
+    if (!selectedTable) {
+      setIsPopoverOpen(true);
+    } else {
+      setIsCheckedOut(true);
+      setIsPopoverOpen(false);
+    }
+  };
 
   return (
     <SheetContent className="flex flex-col gap-5 p-5">
@@ -79,9 +96,20 @@ export const OrderSummarySheet = ({
         {isCheckedOut && (
           <OrderReceiptCard orderItems={orderItems} menuItems={menuItems} />
         )}
-        <Button onClick={() => setIsCheckedOut(true)}>
-          {isCheckedOut ? "Proceed" : "Checkout"}
-        </Button>
+        <Popover
+          open={isPopoverOpen}
+          onOpenChange={() => setIsPopoverOpen(false)}
+        >
+          <PopoverTrigger asChild>
+            <Button onClick={handleCheckout}>
+              {isCheckedOut ? "Proceed" : "Checkout"}
+            </Button>
+          </PopoverTrigger>
+          <PopoverContent className="flex w-fit flex-col items-center justify-center gap-2.5">
+            <Image src="/error.svg" alt="error" width="50" height="50" />
+            <span>You haven&#39;t selected a table yet!</span>
+          </PopoverContent>
+        </Popover>
       </SheetFooter>
     </SheetContent>
   );
