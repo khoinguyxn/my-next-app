@@ -19,7 +19,13 @@ import { OrderItemWithInsert } from "@/domain/models/orders/order-item";
 import { RESET } from "jotai/utils";
 import { useRouter } from "next/navigation";
 import { selectedTableAtom } from "@/models/tables-atom";
-import { ChangeEvent, Dispatch, SetStateAction, useState } from "react";
+import {
+  ChangeEvent,
+  Dispatch,
+  SetStateAction,
+  useEffect,
+  useState,
+} from "react";
 import { Label } from "@/components/ui/label";
 import {
   Popover,
@@ -46,19 +52,28 @@ export const OrderSummarySheet = ({
   const menuItems = useAtomValue(menuItemAtom);
   const selectedTable = useAtomValue(selectedTableAtom);
   const [isPopoverOpen, setIsPopoverOpen] = useState(false);
+  const [shouldCheckout, setShouldCheckout] = useState(false);
 
   const router = useRouter();
 
   const handleSelectTable = () => router.push("/tables");
 
   const handleCheckout = () => {
+    setShouldCheckout(true);
+  };
+
+  useEffect(() => {
+    if (!shouldCheckout) return;
+
     if (!selectedTable) {
       setIsPopoverOpen(true);
     } else {
       setIsCheckedOut(true);
       setIsPopoverOpen(false);
     }
-  };
+
+    setShouldCheckout(false);
+  }, [setIsCheckedOut, shouldCheckout, setIsPopoverOpen, selectedTable]);
 
   return (
     <SheetContent className="flex flex-col gap-5 p-5">
@@ -105,7 +120,7 @@ export const OrderSummarySheet = ({
         )}
         <Popover
           open={isPopoverOpen}
-          onOpenChange={() => setIsPopoverOpen(false)}
+          onOpenChange={(open) => setIsPopoverOpen(open)}
         >
           <PopoverTrigger asChild>
             <Button onClick={handleCheckout}>
