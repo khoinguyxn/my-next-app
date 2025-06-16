@@ -1,14 +1,14 @@
 import "reflect-metadata";
 import {
+  IMenuItemService,
   MenuItemService,
-  MenuItemServiceImpl,
 } from "@/domain/services/menu-item-service";
 import { MenuItem } from "@/domain/models/menu-item";
 import { IMenuItemRepository } from "@/domain/repositories/i-menu-item-repository";
 import { Container } from "inversify";
 
 describe("MenuItemService", () => {
-  let menuItemService: MenuItemService;
+  let menuItemService: IMenuItemService;
   let mockMenuItemRepository: IMenuItemRepository;
   let mockRepositoryGetAll: jest.SpyInstance;
 
@@ -24,9 +24,9 @@ describe("MenuItemService", () => {
     container
       .bind<IMenuItemRepository>("MenuItemRepository")
       .toConstantValue(mockMenuItemRepository);
-    container.bind<MenuItemService>("MenuItemService").to(MenuItemServiceImpl);
+    container.bind<IMenuItemService>("MenuItemService").to(MenuItemService);
 
-    menuItemService = container.get<MenuItemService>("MenuItemService");
+    menuItemService = container.get<IMenuItemService>("MenuItemService");
   });
 
   describe("getAll", () => {

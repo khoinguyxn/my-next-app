@@ -4,12 +4,12 @@ import { inject, injectable } from "inversify";
 import type { IMenuItemRepository } from "../repositories/i-menu-item-repository";
 import type { MenuItem } from "../models/menu-item";
 
-export interface MenuItemService {
+export interface IMenuItemService {
   getAll(): Promise<MenuItem[]>;
 }
 
 @injectable("Request")
-export class MenuItemServiceImpl implements MenuItemService {
+export class MenuItemService implements IMenuItemService {
   constructor(
     @inject("MenuItemRepository")
     private menuItemRepository: IMenuItemRepository,
