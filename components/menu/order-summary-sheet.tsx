@@ -58,9 +58,7 @@ export const OrderSummarySheet = ({
 
   const handleSelectTable = () => router.push("/tables");
 
-  const handleCheckout = () => {
-    setShouldCheckout(true);
-  };
+  const handleCheckout = () => setShouldCheckout(true);
 
   useEffect(() => {
     if (!shouldCheckout) return;
