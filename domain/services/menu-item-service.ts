@@ -1,26 +1,25 @@
-import "reflect-metadata"
-import {inject, injectable} from 'inversify';
+import "reflect-metadata";
+import { inject, injectable } from "inversify";
 
-import type {MenuItemRepository} from "../repositories/menu-item-repository";
-import type {MenuItem} from "../models/menu-item";
+import type { IMenuItemRepository } from "../repositories/i-menu-item-repository";
+import type { MenuItem } from "../models/menu-item";
 
 export interface MenuItemService {
-    getAll(): Promise<MenuItem[]>;
+  getAll(): Promise<MenuItem[]>;
 }
 
 @injectable("Request")
 export class MenuItemServiceImpl implements MenuItemService {
-    constructor(
-        @inject("MenuItemRepository")
-        private menuItemRepository: MenuItemRepository,
-    ) {
-    }
+  constructor(
+    @inject("MenuItemRepository")
+    private menuItemRepository: IMenuItemRepository,
+  ) {}
 
-    async getAll(): Promise<MenuItem[]> {
-        const data = await this.menuItemRepository.getAll();
+  async getAll(): Promise<MenuItem[]> {
+    const data = await this.menuItemRepository.getAll();
 
-        if (data === null) return [];
+    if (data === null) return [];
 
-        return data;
-    }
+    return data;
+  }
 }

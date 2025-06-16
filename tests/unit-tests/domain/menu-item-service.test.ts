@@ -1,77 +1,82 @@
-import 'reflect-metadata';
-import {MenuItemService, MenuItemServiceImpl} from "@/domain/services/menu-item-service";
-import {MenuItem} from "@/domain/models/menu-item";
-import {MenuItemRepository} from "@/domain/repositories/menu-item-repository";
-import {Container} from "inversify";
+import "reflect-metadata";
+import {
+  MenuItemService,
+  MenuItemServiceImpl,
+} from "@/domain/services/menu-item-service";
+import { MenuItem } from "@/domain/models/menu-item";
+import { IMenuItemRepository } from "@/domain/repositories/i-menu-item-repository";
+import { Container } from "inversify";
 
-describe('MenuItemService', () => {
-    let menuItemService: MenuItemService;
-    let mockMenuItemRepository: MenuItemRepository;
-    let mockRepositoryGetAll: jest.SpyInstance;
+describe("MenuItemService", () => {
+  let menuItemService: MenuItemService;
+  let mockMenuItemRepository: IMenuItemRepository;
+  let mockRepositoryGetAll: jest.SpyInstance;
 
-    beforeEach(() => {
-        mockMenuItemRepository = {
-            getAll: async () => [] // Default implementation
-        };
+  beforeEach(() => {
+    mockMenuItemRepository = {
+      getAll: async () => [], // Default implementation
+    };
 
-        mockRepositoryGetAll = jest.spyOn(mockMenuItemRepository, 'getAll');
+    mockRepositoryGetAll = jest.spyOn(mockMenuItemRepository, "getAll");
 
-        const container = new Container();
+    const container = new Container();
 
-        container.bind<MenuItemRepository>("MenuItemRepository").toConstantValue(mockMenuItemRepository);
-        container.bind<MenuItemService>("MenuItemService").to(MenuItemServiceImpl);
+    container
+      .bind<IMenuItemRepository>("MenuItemRepository")
+      .toConstantValue(mockMenuItemRepository);
+    container.bind<MenuItemService>("MenuItemService").to(MenuItemServiceImpl);
 
-        menuItemService = container.get<MenuItemService>("MenuItemService");
-    })
+    menuItemService = container.get<MenuItemService>("MenuItemService");
+  });
 
-    describe('getAll', () => {
-        it('should return menu items', async () => {
-            // Arrange
-            const mockMenuItems: MenuItem[] = [
-                {
-                    menuItemId: 1,
-                    name: 'Espresso',
-                    price: 4.2,
-                    menuCategoryId: 0,
-                    menuCategory: {
-                        menuCategoryId: 0,
-                        name: ''
-                    }
-                },
-                {
-                    menuItemId: 2,
-                    name: 'Latte',
-                    price: 4.8,
-                    menuCategoryId: 0,
-                    menuCategory: {
-                        menuCategoryId: 0,
-                        name: ''
-                    }
-                }
-            ]
+  describe("getAll", () => {
+    it("should return menu items", async () => {
+      // Arrange
+      const mockMenuItems: MenuItem[] = [
+        {
+          menuItemId: 1,
+          name: "Espresso",
+          price: 4.2,
+          menuCategoryId: 0,
+          menuCategory: {
+            menuCategoryId: 0,
+            name: "",
+          },
+        },
+        {
+          menuItemId: 2,
+          name: "Latte",
+          price: 4.8,
+          menuCategoryId: 0,
+          menuCategory: {
+            menuCategoryId: 0,
+            name: "",
+          },
+        },
+      ];
 
-            mockRepositoryGetAll.mockResolvedValue(mockMenuItems);
+      mockRepositoryGetAll.mockResolvedValue(mockMenuItems);
 
-            // Act
-            const result = await menuItemService.getAll();
+      // Act
+      const result = await menuItemService.getAll();
 
-            // Assert
-            expect(result).toEqual(mockMenuItems);
-            expect(mockRepositoryGetAll).toHaveBeenCalledTimes(1);
-        });
+      // Assert
+      expect(result).toEqual(mockMenuItems);
+      expect(mockRepositoryGetAll).toHaveBeenCalledTimes(1);
+    });
 
-        it('should return an empty list when repository returns null', async () => {
-            // Arrange
-            const mockMenuItems = null
+    it("should return an empty list when repository returns null", async () => {
+      // Arrange
+      const mockMenuItems = null;
 
-            mockRepositoryGetAll.mockResolvedValue(mockMenuItems);
+      mockRepositoryGetAll.mockResolvedValue(mockMenuItems);
 
-            // Act
-            const result = await menuItemService.getAll();
+      // Act
+      const result = await menuItemService.getAll();
 
-            // Assert
-            expect(result).toEqual([]);
-            expect(mockRepositoryGetAll).toHaveBeenCalledTimes(1);
-        })
-    })
-})
+      // Assert
+      expect(result).toEqual([]);
+      expect(mockRepositoryGetAll).toHaveBeenCalledTimes(1);
+    });
+  });
+});

@@ -1,11 +1,11 @@
 import { Container } from "inversify";
 
-import { MenuItemRepository } from "@/domain/repositories/menu-item-repository";
+import { IMenuItemRepository } from "@/domain/repositories/i-menu-item-repository";
 import {
   MenuItemService,
   MenuItemServiceImpl,
 } from "@/domain/services/menu-item-service";
-import { MenuItemRepositoryImpl } from "@/infrastructure/repositories/menu-item-repository";
+import { MenuItemRepository } from "@/infrastructure/repositories/menu-item-repository";
 import { createSupabaseBrowserClient } from "@/infrastructure/supabase/client";
 import { TableRepository } from "@/infrastructure/repositories/table-repository";
 import { ITableRepository } from "@/domain/repositories/i-table-repository";
@@ -21,8 +21,8 @@ const supabase = createSupabaseBrowserClient();
 container.bind("Supabase").toConstantValue(supabase);
 
 container
-  .bind<MenuItemRepository>("MenuItemRepository")
-  .to(MenuItemRepositoryImpl);
+  .bind<IMenuItemRepository>("MenuItemRepository")
+  .to(MenuItemRepository);
 container.bind<MenuItemService>("MenuItemService").to(MenuItemServiceImpl);
 
 container.bind<ITableRepository>("TableRepository").to(TableRepository);
