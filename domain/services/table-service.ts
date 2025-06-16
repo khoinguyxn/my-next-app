@@ -4,12 +4,12 @@ import { inject, injectable } from "inversify";
 import type { ITableRepository } from "@/domain/repositories/i-table-repository";
 import { Table } from "@/domain/models/tables/table";
 
-export interface TableService {
+export interface ITableService {
   getAll(): Promise<Table[]>;
 }
 
 @injectable("Request")
-export class TableServiceImpl implements TableService {
+export class TableService implements ITableService {
   constructor(
     @inject("TableRepository")
     private tableRepository: ITableRepository,

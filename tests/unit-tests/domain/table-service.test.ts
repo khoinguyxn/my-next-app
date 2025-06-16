@@ -1,13 +1,10 @@
 import { Container } from "inversify";
-import {
-  TableService,
-  TableServiceImpl,
-} from "@/domain/services/table-service";
+import { ITableService, TableService } from "@/domain/services/table-service";
 import { ITableRepository } from "@/domain/repositories/i-table-repository";
 import { Table } from "@/domain/models/tables/table";
 
 describe("TableService", () => {
-  let tableService: TableService;
+  let tableService: ITableService;
   let mockTableRepository: ITableRepository;
   let mockRepositoryGetAll: jest.SpyInstance;
 
@@ -23,9 +20,9 @@ describe("TableService", () => {
     container
       .bind<ITableRepository>("TableRepository")
       .toConstantValue(mockTableRepository);
-    container.bind<TableService>("TableService").to(TableServiceImpl);
+    container.bind<ITableService>("TableService").to(TableService);
 
-    tableService = container.get<TableService>("TableService");
+    tableService = container.get<ITableService>("TableService");
   });
 
   describe("getAll", () => {

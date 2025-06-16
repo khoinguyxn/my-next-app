@@ -9,10 +9,7 @@ import { MenuItemRepository } from "@/infrastructure/repositories/menu-item-repo
 import { createSupabaseBrowserClient } from "@/infrastructure/supabase/client";
 import { TableRepository } from "@/infrastructure/repositories/table-repository";
 import { ITableRepository } from "@/domain/repositories/i-table-repository";
-import {
-  TableService,
-  TableServiceImpl,
-} from "@/domain/services/table-service";
+import { ITableService, TableService } from "@/domain/services/table-service";
 
 const container = new Container();
 
@@ -26,6 +23,6 @@ container
 container.bind<IMenuItemService>("MenuItemService").to(MenuItemService);
 
 container.bind<ITableRepository>("TableRepository").to(TableRepository);
-container.bind<TableService>("TableService").to(TableServiceImpl);
+container.bind<ITableService>("TableService").to(TableService);
 
 export { container };
