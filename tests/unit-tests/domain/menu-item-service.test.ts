@@ -1,32 +1,23 @@
-import "reflect-metadata";
 import {
   IMenuItemService,
   MenuItemService,
 } from "@/domain/services/menu-item-service";
 import { MenuItem } from "@/domain/models/menu-item";
 import { IMenuItemRepository } from "@/domain/repositories/i-menu-item-repository";
-import { Container } from "inversify";
+
+const mockGetAll = jest.fn<Promise<MenuItem[]>, []>();
 
 describe("MenuItemService", () => {
   let menuItemService: IMenuItemService;
-  let mockMenuItemRepository: IMenuItemRepository;
-  let mockRepositoryGetAll: jest.SpyInstance;
 
   beforeEach(() => {
-    mockMenuItemRepository = {
-      getAll: async () => [], // Default implementation
+    jest.clearAllMocks();
+
+    const mockMenuItemRepository: IMenuItemRepository = {
+      getAll: mockGetAll,
     };
 
-    mockRepositoryGetAll = jest.spyOn(mockMenuItemRepository, "getAll");
-
-    const container = new Container();
-
-    container
-      .bind<IMenuItemRepository>("MenuItemRepository")
-      .toConstantValue(mockMenuItemRepository);
-    container.bind<IMenuItemService>("MenuItemService").to(MenuItemService);
-
-    menuItemService = container.get<IMenuItemService>("MenuItemService");
+    menuItemService = new MenuItemService(mockMenuItemRepository);
   });
 
   describe("getAll", () => {
@@ -55,28 +46,28 @@ describe("MenuItemService", () => {
         },
       ];
 
-      mockRepositoryGetAll.mockResolvedValue(mockMenuItems);
+      mockGetAll.mockResolvedValue(mockMenuItems);
 
       // Act
       const result = await menuItemService.getAll();
 
       // Assert
       expect(result).toEqual(mockMenuItems);
-      expect(mockRepositoryGetAll).toHaveBeenCalledTimes(1);
+      expect(mockGetAll).toHaveBeenCalledTimes(1);
     });
 
     it("should return an empty list when repository returns null", async () => {
       // Arrange
       const mockMenuItems = null;
 
-      mockRepositoryGetAll.mockResolvedValue(mockMenuItems);
+      mockGetAll.mockResolvedValue(mockMenuItems);
 
       // Act
       const result = await menuItemService.getAll();
 
       // Assert
       expect(result).toEqual([]);
-      expect(mockRepositoryGetAll).toHaveBeenCalledTimes(1);
+      expect(mockGetAll).toHaveBeenCalledTimes(1);
     });
   });
 });

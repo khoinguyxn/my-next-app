@@ -1,28 +1,20 @@
-import { Container } from "inversify";
 import { ITableService, TableService } from "@/domain/services/table-service";
 import { ITableRepository } from "@/domain/repositories/i-table-repository";
 import { Table } from "@/domain/models/tables/table";
 
+const mockGetAll = jest.fn<Promise<Table[]>, []>();
+
 describe("TableService", () => {
   let tableService: ITableService;
-  let mockTableRepository: ITableRepository;
-  let mockRepositoryGetAll: jest.SpyInstance;
 
   beforeEach(() => {
-    mockTableRepository = {
-      getAll: async () => [], // Default implementation
+    jest.clearAllMocks();
+
+    const mockTableRepository: ITableRepository = {
+      getAll: mockGetAll,
     };
 
-    mockRepositoryGetAll = jest.spyOn(mockTableRepository, "getAll");
-
-    const container = new Container();
-
-    container
-      .bind<ITableRepository>("TableRepository")
-      .toConstantValue(mockTableRepository);
-    container.bind<ITableService>("TableService").to(TableService);
-
-    tableService = container.get<ITableService>("TableService");
+    tableService = new TableService(mockTableRepository);
   });
 
   describe("getAll", () => {
@@ -41,28 +33,28 @@ describe("TableService", () => {
         },
       ];
 
-      mockRepositoryGetAll.mockResolvedValue(mockTables);
+      mockGetAll.mockResolvedValue(mockTables);
 
       // Act
       const result = await tableService.getAll();
 
       // Assert
       expect(result).toEqual(mockTables);
-      expect(mockRepositoryGetAll).toHaveBeenCalledTimes(1);
+      expect(mockGetAll).toHaveBeenCalledTimes(1);
     });
 
     it("should return an empty list when repository returns null", async () => {
       // Arrange
       const mockTables = null;
 
-      mockRepositoryGetAll.mockResolvedValue(mockTables);
+      mockGetAll.mockResolvedValue(mockTables);
 
       // Act
       const result = await tableService.getAll();
 
       // Assert
       expect(result).toEqual([]);
-      expect(mockRepositoryGetAll).toHaveBeenCalledTimes(1);
+      expect(mockGetAll).toHaveBeenCalledTimes(1);
     });
   });
 });
