@@ -1,27 +1,39 @@
-import { Container } from "inversify";
 import { PostgrestError, SupabaseClient } from "@supabase/supabase-js";
 import { Table } from "@/domain/models/tables/table";
 import { ITableRepository } from "@/domain/repositories/i-table-repository";
 import { TableRepository } from "@/infrastructure/repositories/table-repository";
+import { SelectResponse } from "@/tests/unit-tests/infrastructure/repositories/commons";
+import { Database } from "@/infrastructure/supabase/database.types";
 
-const mockSelect = jest.fn();
-const mockFrom = jest.fn().mockReturnValue({
-  select: mockSelect,
-});
+const mockSelect = jest.fn<Promise<SelectResponse>, [Table]>();
+const mockFrom = jest
+  .fn<
+    {
+      select: typeof mockSelect;
+    },
+    [string]
+  >()
+  .mockImplementation((table: string) => {
+    if (table === "Table") {
+      return {
+        select: mockSelect,
+      };
+    }
 
-const mockSupabaseClient: jest.Mocked<Pick<SupabaseClient, "from">> = {
+    throw new Error(`Unexpected table: ${table}`);
+  });
+
+const mockSupabase = {
   from: mockFrom,
-};
+} as unknown as SupabaseClient<Database>;
 
 describe("TableRepository", () => {
   let tableRepository: ITableRepository;
 
   beforeEach(() => {
-    const container = new Container();
-    container.bind("Supabase").toConstantValue(mockSupabaseClient);
-    container.bind<ITableRepository>("TableRepository").to(TableRepository);
+    jest.clearAllMocks();
 
-    tableRepository = container.get<ITableRepository>("TableRepository");
+    tableRepository = new TableRepository(mockSupabase);
   });
 
   describe("getAll", () => {
@@ -50,7 +62,7 @@ describe("TableRepository", () => {
 
       // Assert
       expect(result).toEqual(mockTables);
-      expect(mockSupabaseClient.from).toHaveBeenCalledWith("Table");
+      expect(mockFrom).toHaveBeenCalledWith("Table");
       expect(mockSelect).toHaveBeenCalledWith("*");
     });
 
@@ -71,7 +83,7 @@ describe("TableRepository", () => {
 
       // Act and Assert
       await expect(tableRepository.getAll()).rejects.toEqual(mockError);
-      expect(mockSupabaseClient.from).toHaveBeenCalledWith("Table");
+      expect(mockFrom).toHaveBeenCalledWith("Table");
       expect(mockSelect).toHaveBeenCalledWith("*");
     });
 
@@ -87,7 +99,7 @@ describe("TableRepository", () => {
 
       // Assert
       expect(result).toBeNull();
-      expect(mockSupabaseClient.from).toHaveBeenCalledWith("Table");
+      expect(mockFrom).toHaveBeenCalledWith("Table");
       expect(mockSelect).toHaveBeenCalledWith("*");
     });
   });

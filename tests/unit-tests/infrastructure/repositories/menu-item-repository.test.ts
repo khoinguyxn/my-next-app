@@ -1,31 +1,40 @@
 import "reflect-metadata";
-import { Container } from "inversify";
 import { IMenuItemRepository } from "@/domain/repositories/i-menu-item-repository";
 import { MenuItemRepository } from "@/infrastructure/repositories/menu-item-repository";
 import { MenuItem } from "@/domain/models/menu-item";
 import { PostgrestError, SupabaseClient } from "@supabase/supabase-js";
+import { SelectResponse } from "@/tests/unit-tests/infrastructure/repositories/commons";
+import { Database } from "@/infrastructure/supabase/database.types";
 
-const mockSelect = jest.fn();
-const mockFrom = jest.fn().mockReturnValue({
-  select: mockSelect,
-});
+const mockSelect = jest.fn<Promise<SelectResponse>, [MenuItem]>();
+const mockFrom = jest
+  .fn<
+    {
+      select: typeof mockSelect;
+    },
+    [string]
+  >()
+  .mockImplementation((table: string) => {
+    if (table === "MenuItem") {
+      return {
+        select: mockSelect,
+      };
+    }
 
-const mockSupabaseClient: jest.Mocked<Pick<SupabaseClient, "from">> = {
+    throw new Error(`Unexpected table: ${table}`);
+  });
+
+const mockSupabase = {
   from: mockFrom,
-};
+} as unknown as SupabaseClient<Database>;
 
-describe("MenuItemRepositoryImpl", () => {
+describe("MenuItemRepository", () => {
   let menuItemRepository: IMenuItemRepository;
 
   beforeEach(() => {
-    const container = new Container();
-    container.bind("Supabase").toConstantValue(mockSupabaseClient);
-    container
-      .bind<IMenuItemRepository>("MenuItemRepository")
-      .to(MenuItemRepository);
+    jest.clearAllMocks();
 
-    menuItemRepository =
-      container.get<IMenuItemRepository>("MenuItemRepository");
+    menuItemRepository = new MenuItemRepository(mockSupabase);
   });
 
   describe("getAll", () => {
@@ -64,7 +73,7 @@ describe("MenuItemRepositoryImpl", () => {
 
       // Assert
       expect(result).toEqual(mockMenuItems);
-      expect(mockSupabaseClient.from).toHaveBeenCalledWith("MenuItem");
+      expect(mockFrom).toHaveBeenCalledWith("MenuItem");
       expect(mockSelect).toHaveBeenCalledWith(
         "*, menuCategory: MenuCategory(*)",
       );
@@ -87,7 +96,7 @@ describe("MenuItemRepositoryImpl", () => {
 
       // Act and Assert
       await expect(menuItemRepository.getAll()).rejects.toEqual(mockError);
-      expect(mockSupabaseClient.from).toHaveBeenCalledWith("MenuItem");
+      expect(mockFrom).toHaveBeenCalledWith("MenuItem");
       expect(mockSelect).toHaveBeenCalledWith(
         "*, menuCategory: MenuCategory(*)",
       );
@@ -105,7 +114,7 @@ describe("MenuItemRepositoryImpl", () => {
 
       // Assert
       expect(result).toBeNull();
-      expect(mockSupabaseClient.from).toHaveBeenCalledWith("MenuItem");
+      expect(mockFrom).toHaveBeenCalledWith("MenuItem");
       expect(mockSelect).toHaveBeenCalledWith(
         "*, menuCategory: MenuCategory(*)",
       );
