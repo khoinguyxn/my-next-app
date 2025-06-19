@@ -53,20 +53,52 @@ export type Database = {
           },
         ];
       };
+      Order: {
+        Row: {
+          createdAt: string;
+          orderNumber: number;
+          received: number | null;
+          tableNumber: number;
+        };
+        Insert: {
+          createdAt?: string;
+          orderNumber?: number;
+          received?: number | null;
+          tableNumber: number;
+        };
+        Update: {
+          createdAt?: string;
+          orderNumber?: number;
+          received?: number | null;
+          tableNumber?: number;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "Order_tableNumber_fkey";
+            columns: ["tableNumber"];
+            isOneToOne: false;
+            referencedRelation: "Table";
+            referencedColumns: ["tableNumber"];
+          },
+        ];
+      };
       OrderItem: {
         Row: {
           menuItemId: number;
           orderItemId: number;
+          orderNumber: number;
           quantity: number;
         };
         Insert: {
           menuItemId: number;
           orderItemId?: number;
+          orderNumber?: number;
           quantity: number;
         };
         Update: {
           menuItemId?: number;
           orderItemId?: number;
+          orderNumber?: number;
           quantity?: number;
         };
         Relationships: [
@@ -76,6 +108,13 @@ export type Database = {
             isOneToOne: false;
             referencedRelation: "MenuItem";
             referencedColumns: ["menuItemId"];
+          },
+          {
+            foreignKeyName: "OrderItem_orderNumber_fkey";
+            columns: ["orderNumber"];
+            isOneToOne: false;
+            referencedRelation: "Order";
+            referencedColumns: ["orderNumber"];
           },
         ];
       };
