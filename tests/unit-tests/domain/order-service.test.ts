@@ -1,6 +1,6 @@
 import { IOrderRepository } from "@/domain/repositories/i-order-repository";
 import { OrderWithInsert } from "@/domain/models/orders/order";
-import { OrderService } from "@/domain/services/order-service";
+import { IOrderService, OrderService } from "@/domain/services/order-service";
 
 const mockCreate = jest.fn<Promise<void>, [OrderWithInsert]>();
 

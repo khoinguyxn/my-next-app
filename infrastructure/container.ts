@@ -15,6 +15,10 @@ import { OrderRepository } from "@/infrastructure/repositories/order-repository"
 import { IOrderService, OrderService } from "@/domain/services/order-service";
 import { IOrderItemRepository } from "@/domain/repositories/i-order-item-repository";
 import { OrderItemRepository } from "@/infrastructure/repositories/order-item-repository";
+import {
+  IOrderItemService,
+  OrderItemService,
+} from "@/domain/services/order-item-service";
 
 const container = new Container();
 
@@ -36,5 +40,6 @@ container.bind<IOrderService>("OrderService").to(OrderService);
 container
   .bind<IOrderItemRepository>("OrderItemRepository")
   .to(OrderItemRepository);
+container.bind<IOrderItemService>("OrderItemService").to(OrderItemService);
 
 export { container };
