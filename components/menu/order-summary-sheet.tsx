@@ -36,6 +36,7 @@ import {
 import { cn } from "@/lib/utils";
 import useOrder from "@/hooks/use-order";
 import { OrderWithInsert } from "@/domain/models/orders/order";
+import useMutateTables from "@/hooks/use-mutate-tables";
 
 const receivedAtom = atom<string>();
 const currencyInputOptions: NumberFormatOptions = {
@@ -56,7 +57,8 @@ export const OrderSummarySheet = () => {
   const [checkoutPhase, setCheckoutPhase] = useState<CheckoutPhase>("idle");
   const [receivedAmount, setReceivedAmount] = useAtom(receivedAtom);
   const setIsBasketSheetOpen = useSetAtom(isBasketSheetOpenAtom);
-  const { mutateAsync: doPayAsync } = useOrder();
+  const { mutateAsync: doCreateOrder } = useOrder();
+  const { mutateAsync: doUpdateTable } = useMutateTables();
 
   const router = useRouter();
 
@@ -72,10 +74,13 @@ export const OrderSummarySheet = () => {
       received: Number(currencyFormat.unformat(receivedAmount)),
     };
 
-    await doPayAsync({
-      order: order,
-      orderItems: orderItems,
-    });
+    await Promise.all([
+      doCreateOrder({
+        order: order,
+        orderItems: orderItems,
+      }),
+      doUpdateTable(selectedTable),
+    ]);
 
     setIsPopoverOpen(false);
     setCheckoutPhase("paid");
