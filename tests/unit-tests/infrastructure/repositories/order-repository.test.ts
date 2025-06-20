@@ -3,9 +3,21 @@ import { IOrderRepository } from "@/domain/repositories/i-order-repository";
 import { OrderRepository } from "@/infrastructure/repositories/order-repository";
 import { OrderWithInsert } from "@/domain/models/orders/order";
 import { Database } from "@/infrastructure/supabase/database.types";
-import { InsertResponse } from "@/tests/unit-tests/infrastructure/repositories/commons";
+import { SelectResponse } from "@/tests/unit-tests/infrastructure/repositories/commons";
 
-const mockInsert = jest.fn<Promise<InsertResponse>, [OrderWithInsert]>();
+const mockSelect = jest.fn<Promise<SelectResponse>, [string?]>();
+
+const mockInsert = jest
+  .fn<
+    {
+      select: typeof mockSelect;
+    },
+    [OrderWithInsert]
+  >()
+  .mockImplementation(() => ({
+    select: mockSelect,
+  }));
+
 const mockFrom = jest
   .fn<
     {
@@ -39,23 +51,30 @@ describe("OrderRepository", () => {
   describe("create", () => {
     it("should return void when successfully insert an order", async () => {
       // Arrange
-      mockInsert.mockResolvedValue({ error: null });
-
       const order: OrderWithInsert = {
         tableNumber: 1,
       };
 
+      const orderNumber = 0;
+
+      mockSelect.mockResolvedValue({
+        error: null,
+        data: [{ ...order, orderNumber: orderNumber }],
+      });
+
       // Act
-      await orderRepository.create(order);
+      const result = await orderRepository.create(order);
 
       // Assert
+      expect(result).toBe(orderNumber);
       expect(mockInsert).toHaveBeenCalledWith(order);
       expect(mockFrom).toHaveBeenCalledWith("Order");
+      expect(mockSelect).toHaveBeenCalledWith("orderNumber");
     });
 
     it("should throw an error when unsuccessfully insert an order", async () => {
       // Arrange
-      const mockPostgrestError: PostgrestError = {
+      const postgrestError: PostgrestError = {
         message: "Database error",
         code: "500",
         details: "",
@@ -63,15 +82,20 @@ describe("OrderRepository", () => {
         name: "",
       };
 
-      mockInsert.mockResolvedValue({ error: mockPostgrestError });
-
       const order: OrderWithInsert = {
         tableNumber: 1,
       };
 
+      const orderNumber = 0;
+
+      mockSelect.mockResolvedValue({
+        error: postgrestError,
+        data: [{ ...order, orderNumber: orderNumber }],
+      });
+
       // Act and Assert
       await expect(orderRepository.create(order)).rejects.toEqual(
-        mockPostgrestError,
+        postgrestError,
       );
 
       expect(mockInsert).toHaveBeenCalledWith(order);

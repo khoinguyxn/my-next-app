@@ -9,9 +9,16 @@ import { OrderWithInsert } from "@/domain/models/orders/order";
 export class OrderRepository implements IOrderRepository {
   constructor(@inject("Supabase") private supabase: SupabaseClient<Database>) {}
 
-  async create(order: OrderWithInsert): Promise<void> {
-    const { error } = await this.supabase.from("Order").insert(order);
+  async create(order: OrderWithInsert): Promise<number> {
+    const { data, error } = await this.supabase
+      .from("Order")
+      .insert(order)
+      .select("orderNumber");
 
     if (error) throw error;
+
+    if (!data) throw new Error("No data returned from the database");
+
+    return data[0].orderNumber;
   }
 }

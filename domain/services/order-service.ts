@@ -4,7 +4,7 @@ import type { IOrderRepository } from "@/domain/repositories/i-order-repository"
 import { OrderWithInsert } from "@/domain/models/orders/order";
 
 export interface IOrderService {
-  create(order: OrderWithInsert): Promise<void>;
+  create(order: OrderWithInsert): Promise<number>;
 }
 
 @injectable("Request")
@@ -14,7 +14,7 @@ export class OrderService implements IOrderService {
     private orderRepository: IOrderRepository,
   ) {}
 
-  async create(order: OrderWithInsert): Promise<void> {
-    await this.orderRepository.create(order);
+  async create(order: OrderWithInsert): Promise<number> {
+    return await this.orderRepository.create(order);
   }
 }

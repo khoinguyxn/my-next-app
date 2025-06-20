@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import { EditIcon, MinusIcon, PlusIcon } from "lucide-react";
 import { Card, CardContent, CardTitle } from "@/components/ui/card";
 import { CloseIcon } from "@mantine/core";
-import { useAtom, useAtomValue } from "jotai";
+import { atom, useAtom, useAtomValue } from "jotai";
 import { orderItemAtom } from "@/models/order-item-atom";
 import {
   menuItemAtom,
@@ -34,12 +34,15 @@ import {
 } from "@/components/ui/popover";
 import Image from "next/image";
 import {
-  format,
   InputNumberFormat,
   NumberFormat,
   NumberFormatOptions,
 } from "@react-input/number-format";
 import { cn } from "@/lib/utils";
+import useOrder from "@/hooks/use-order";
+import { OrderWithInsert } from "@/domain/models/orders/order";
+
+const receivedAtom = atom<number>(0);
 
 export const OrderSummarySheet = ({
   isCheckedOut,
@@ -53,12 +56,28 @@ export const OrderSummarySheet = ({
   const selectedTable = useAtomValue(selectedTableAtom);
   const [isPopoverOpen, setIsPopoverOpen] = useState(false);
   const [shouldCheckout, setShouldCheckout] = useState(false);
+  const receivedAmount = useAtomValue(receivedAtom);
+  const { mutateAsync: doPayAsync } = useOrder();
 
   const router = useRouter();
 
   const handleSelectTable = () => router.push("/tables");
 
   const handleCheckout = () => setShouldCheckout(true);
+
+  const handlePay = async () => {
+    if (!selectedTable) return;
+
+    const order: OrderWithInsert = {
+      tableNumber: selectedTable.tableNumber,
+      received: receivedAmount,
+    };
+
+    await doPayAsync({
+      order: order,
+      orderItems: orderItems,
+    });
+  };
 
   useEffect(() => {
     if (!shouldCheckout) return;
@@ -121,9 +140,11 @@ export const OrderSummarySheet = ({
           onOpenChange={(open) => setIsPopoverOpen(open)}
         >
           <PopoverTrigger asChild>
-            <Button onClick={handleCheckout}>
-              {isCheckedOut ? "Proceed" : "Checkout"}
-            </Button>
+            {isCheckedOut ? (
+              <Button onClick={handlePay}>Pay</Button>
+            ) : (
+              <Button onClick={handleCheckout}>Checkout</Button>
+            )}
           </PopoverTrigger>
           <PopoverContent className="flex w-fit flex-col items-center justify-center gap-2.5">
             <Image src="/error.svg" alt="error" width="50" height="50" />
@@ -221,6 +242,8 @@ const OrderReceiptCard = ({
   orderItems: OrderItemWithInsert[];
   menuItems: MenuItem[];
 }) => {
+  const [receivedAmount, setReceivedAmount] = useAtom(receivedAtom);
+
   const currencyInputOptions: NumberFormatOptions = {
     format: "currency",
     currency: "USD",
@@ -229,14 +252,11 @@ const OrderReceiptCard = ({
 
   const currencyFormat = new NumberFormat(currencyInputOptions);
 
-  const defaultReceivedAmount = format(0, currencyInputOptions);
-  const [received, setReceived] = useState(defaultReceivedAmount);
+  const menuItemPrices = new Map<number, number>(
+    menuItems.map(({ menuItemId, price }) => [menuItemId, price]),
+  );
 
   const getSubtotal = () => {
-    const menuItemPrices = new Map<number, number>(
-      menuItems.map(({ menuItemId, price }) => [menuItemId, price]),
-    );
-
     return orderItems.reduce(
       (accumulator, { menuItemId, quantity }) =>
         accumulator + (menuItemPrices.get(menuItemId) ?? 0) * quantity,
@@ -252,18 +272,20 @@ const OrderReceiptCard = ({
 
   const getTotal = () => getSubtotal() + getGST();
 
+  const getChange = () => {
+    return receivedAmount < getTotal() ? 0 : receivedAmount - getTotal();
+  };
+
+  const handleReceivedAmountChange = (event: ChangeEvent<HTMLInputElement>) => {
+    const value = Number(currencyFormat.unformat(event.target.value));
+
+    setReceivedAmount(value);
+  };
+
   const orderReceiptItems = {
     Subtotal: getSubtotal(),
     GST: getGST(),
     Total: getTotal(),
-  };
-
-  const getChange = () => {
-    const unformattedReceived = Number(currencyFormat.unformat(received));
-
-    if (unformattedReceived < getTotal()) return 0;
-
-    return unformattedReceived - getTotal();
   };
 
   return (
@@ -288,9 +310,9 @@ const OrderReceiptCard = ({
             currency="USD"
             maximumFractionDigits={2}
             maximumIntegerDigits={4}
-            value={received}
+            value={receivedAmount}
             onChange={(event: ChangeEvent<HTMLInputElement>) =>
-              setReceived(event.target.value)
+              handleReceivedAmountChange(event)
             }
             placeholder="$0.00"
             className={cn(
