@@ -3,10 +3,7 @@ import { IOrderRepository } from "@/domain/repositories/i-order-repository";
 import { OrderRepository } from "@/infrastructure/repositories/order-repository";
 import { OrderWithInsert } from "@/domain/models/orders/order";
 import { Database } from "@/infrastructure/supabase/database.types";
-
-type InsertResponse = {
-  error: PostgrestError | null;
-};
+import { InsertResponse } from "@/tests/unit-tests/infrastructure/repositories/commons";
 
 const mockInsert = jest.fn<Promise<InsertResponse>, [OrderWithInsert]>();
 const mockFrom = jest

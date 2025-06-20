@@ -10,6 +10,11 @@ import { createSupabaseBrowserClient } from "@/infrastructure/supabase/client";
 import { TableRepository } from "@/infrastructure/repositories/table-repository";
 import { ITableRepository } from "@/domain/repositories/i-table-repository";
 import { ITableService, TableService } from "@/domain/services/table-service";
+import { IOrderRepository } from "@/domain/repositories/i-order-repository";
+import { OrderRepository } from "@/infrastructure/repositories/order-repository";
+import { IOrderService, OrderService } from "@/domain/services/order-service";
+import { IOrderItemRepository } from "@/domain/repositories/i-order-item-repository";
+import { OrderItemRepository } from "@/infrastructure/repositories/order-item-repository";
 
 const container = new Container();
 
@@ -24,5 +29,12 @@ container.bind<IMenuItemService>("MenuItemService").to(MenuItemService);
 
 container.bind<ITableRepository>("TableRepository").to(TableRepository);
 container.bind<ITableService>("TableService").to(TableService);
+
+container.bind<IOrderRepository>("OrderRepository").to(OrderRepository);
+container.bind<IOrderService>("OrderService").to(OrderService);
+
+container
+  .bind<IOrderItemRepository>("OrderItemRepository")
+  .to(OrderItemRepository);
 
 export { container };
