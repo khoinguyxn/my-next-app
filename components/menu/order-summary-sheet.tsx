@@ -8,9 +8,10 @@ import { Button } from "@/components/ui/button";
 import { EditIcon, MinusIcon, PlusIcon } from "lucide-react";
 import { Card, CardContent, CardTitle } from "@/components/ui/card";
 import { CloseIcon } from "@mantine/core";
-import { atom, useAtom, useAtomValue } from "jotai";
+import { atom, useAtom, useAtomValue, useSetAtom } from "jotai";
 import { orderItemAtom } from "@/models/order-item-atom";
 import {
+  isBasketSheetOpenAtom,
   menuItemAtom,
   menuItemWithQuantityAtomFamily,
 } from "@/models/menu-item-atom";
@@ -19,13 +20,7 @@ import { OrderItemWithInsert } from "@/domain/models/orders/order-item";
 import { RESET } from "jotai/utils";
 import { useRouter } from "next/navigation";
 import { selectedTableAtom } from "@/models/tables-atom";
-import {
-  ChangeEvent,
-  Dispatch,
-  SetStateAction,
-  useEffect,
-  useState,
-} from "react";
+import { ChangeEvent, useEffect, useState } from "react";
 import { Label } from "@/components/ui/label";
 import {
   Popover,
@@ -42,55 +37,71 @@ import { cn } from "@/lib/utils";
 import useOrder from "@/hooks/use-order";
 import { OrderWithInsert } from "@/domain/models/orders/order";
 
-const receivedAtom = atom<number>(0);
+const receivedAtom = atom<string>();
+const currencyInputOptions: NumberFormatOptions = {
+  format: "currency",
+  currency: "USD",
+  maximumFractionDigits: 2,
+};
 
-export const OrderSummarySheet = ({
-  isCheckedOut,
-  setIsCheckedOut,
-}: {
-  isCheckedOut: boolean;
-  setIsCheckedOut: Dispatch<SetStateAction<boolean>>;
-}) => {
-  const orderItems = useAtomValue(orderItemAtom);
+const currencyFormat = new NumberFormat(currencyInputOptions);
+
+type CheckoutPhase = "idle" | "validating" | "confirmed" | "paid";
+
+export const OrderSummarySheet = () => {
+  const [orderItems, setOrderItems] = useAtom(orderItemAtom);
   const menuItems = useAtomValue(menuItemAtom);
-  const selectedTable = useAtomValue(selectedTableAtom);
+  const [selectedTable, setSelectedTable] = useAtom(selectedTableAtom);
   const [isPopoverOpen, setIsPopoverOpen] = useState(false);
-  const [shouldCheckout, setShouldCheckout] = useState(false);
-  const receivedAmount = useAtomValue(receivedAtom);
+  const [checkoutPhase, setCheckoutPhase] = useState<CheckoutPhase>("idle");
+  const [receivedAmount, setReceivedAmount] = useAtom(receivedAtom);
+  const setIsBasketSheetOpen = useSetAtom(isBasketSheetOpenAtom);
   const { mutateAsync: doPayAsync } = useOrder();
 
   const router = useRouter();
 
   const handleSelectTable = () => router.push("/tables");
 
-  const handleCheckout = () => setShouldCheckout(true);
+  const handleCheckout = () => setCheckoutPhase("validating");
 
   const handlePay = async () => {
-    if (!selectedTable) return;
+    if (!selectedTable || !receivedAmount) return;
 
     const order: OrderWithInsert = {
       tableNumber: selectedTable.tableNumber,
-      received: receivedAmount,
+      received: Number(currencyFormat.unformat(receivedAmount)),
     };
 
     await doPayAsync({
       order: order,
       orderItems: orderItems,
     });
+
+    setIsPopoverOpen(false);
+    setCheckoutPhase("paid");
+    setSelectedTable(undefined);
+    setReceivedAmount(undefined);
+    setOrderItems([]);
+    setIsBasketSheetOpen(false);
   };
 
   useEffect(() => {
-    if (!shouldCheckout) return;
+    if (checkoutPhase !== "validating") return;
 
     if (!selectedTable) {
       setIsPopoverOpen(true);
+      setCheckoutPhase("idle");
     } else {
-      setIsCheckedOut(true);
+      setCheckoutPhase("confirmed");
       setIsPopoverOpen(false);
     }
+  }, [setCheckoutPhase, checkoutPhase, setIsPopoverOpen, selectedTable]);
 
-    setShouldCheckout(false);
-  }, [setIsCheckedOut, shouldCheckout, setIsPopoverOpen, selectedTable]);
+  useEffect(() => {
+    if (checkoutPhase === "paid") {
+      setCheckoutPhase("idle");
+    }
+  }, [checkoutPhase, setCheckoutPhase]);
 
   return (
     <SheetContent className="flex flex-col gap-5 p-5">
@@ -105,7 +116,7 @@ export const OrderSummarySheet = ({
               {selectedTable === undefined ? "__" : selectedTable.tableNumber}
             </span>
           </div>
-          {!isCheckedOut && (
+          {checkoutPhase !== "confirmed" && (
             <Button variant="outline" size="icon" onClick={handleSelectTable}>
               <EditIcon />
             </Button>
@@ -126,13 +137,13 @@ export const OrderSummarySheet = ({
               key={menuItem.menuItemId}
               menuItem={menuItem}
               orderItem={orderItem}
-              isCheckedOut={isCheckedOut}
+              checkoutPhase={checkoutPhase}
             />
           );
         })}
       </div>
       <SheetFooter className="gap-2.5 p-0">
-        {isCheckedOut && (
+        {checkoutPhase === "confirmed" && (
           <OrderReceiptCard orderItems={orderItems} menuItems={menuItems} />
         )}
         <Popover
@@ -140,7 +151,7 @@ export const OrderSummarySheet = ({
           onOpenChange={(open) => setIsPopoverOpen(open)}
         >
           <PopoverTrigger asChild>
-            {isCheckedOut ? (
+            {checkoutPhase === "confirmed" ? (
               <Button onClick={handlePay}>Pay</Button>
             ) : (
               <Button onClick={handleCheckout}>Checkout</Button>
@@ -159,11 +170,11 @@ export const OrderSummarySheet = ({
 const OrderItemCard = ({
   menuItem,
   orderItem,
-  isCheckedOut,
+  checkoutPhase,
 }: {
   menuItem: MenuItem;
   orderItem: OrderItemWithInsert;
-  isCheckedOut: boolean;
+  checkoutPhase: CheckoutPhase;
 }) => {
   const [orderItems, setOrderItems] = useAtom(orderItemAtom);
   const [menuItemWithQuantity, setMenuItemQuantity] = useAtom(
@@ -198,18 +209,18 @@ const OrderItemCard = ({
     <Card className="gap-5 p-5">
       <div className="flex flex-row items-center justify-between">
         <CardTitle>
-          {isCheckedOut
+          {checkoutPhase === "confirmed"
             ? `${menuItemWithQuantity} x ${menuItem.name}`
             : menuItem.name}
         </CardTitle>
-        {!isCheckedOut && (
+        {checkoutPhase !== "confirmed" && (
           <Button variant="outline" size="icon" onClick={handleRemoveOrderItem}>
             <CloseIcon />
           </Button>
         )}
       </div>
       <div className="flex flex-row items-center justify-between">
-        {!isCheckedOut && (
+        {checkoutPhase !== "confirmed" && (
           <div className="flex flex-row items-center gap-2.5">
             <Button
               variant="outline"
@@ -244,14 +255,6 @@ const OrderReceiptCard = ({
 }) => {
   const [receivedAmount, setReceivedAmount] = useAtom(receivedAtom);
 
-  const currencyInputOptions: NumberFormatOptions = {
-    format: "currency",
-    currency: "USD",
-    maximumFractionDigits: 2,
-  };
-
-  const currencyFormat = new NumberFormat(currencyInputOptions);
-
   const menuItemPrices = new Map<number, number>(
     menuItems.map(({ menuItemId, price }) => [menuItemId, price]),
   );
@@ -273,13 +276,19 @@ const OrderReceiptCard = ({
   const getTotal = () => getSubtotal() + getGST();
 
   const getChange = () => {
-    return receivedAmount < getTotal() ? 0 : receivedAmount - getTotal();
+    if (!receivedAmount) return 0;
+
+    const unformattedReceivedAmount = Number(
+      currencyFormat.unformat(receivedAmount),
+    );
+
+    return unformattedReceivedAmount < getTotal()
+      ? 0
+      : unformattedReceivedAmount - getTotal();
   };
 
   const handleReceivedAmountChange = (event: ChangeEvent<HTMLInputElement>) => {
-    const value = Number(currencyFormat.unformat(event.target.value));
-
-    setReceivedAmount(value);
+    setReceivedAmount(event.target.value);
   };
 
   const orderReceiptItems = {

@@ -11,11 +11,15 @@ import { PageHeader } from "@/components/page-header";
 import { ShoppingBasketIcon } from "lucide-react";
 import { Sheet, SheetTrigger } from "@/components/ui/sheet";
 import { OrderSummarySheet } from "@/components/menu/order-summary-sheet";
-import { useState } from "react";
+
+import { useAtom } from "jotai";
+import { isBasketSheetOpenAtom } from "@/models/menu-item-atom";
 
 export default function Home() {
   const { data: menuItems, isLoading, isError } = useMenuItems();
-  const [isCheckedOut, setIsCheckedOut] = useState(false);
+  const [isBasketSheetOpen, setIsBasketSheetOpen] = useAtom(
+    isBasketSheetOpenAtom,
+  );
 
   if (isLoading) return <HomePageLoadingSkeleton />;
   if (isError) return <div>Error loading menu items</div>;
@@ -25,10 +29,11 @@ export default function Home() {
   ];
   menuCategories.unshift("All");
 
-  const handleSheetOpenChange = () => setIsCheckedOut(false);
-
   return (
-    <Sheet onOpenChange={handleSheetOpenChange}>
+    <Sheet
+      open={isBasketSheetOpen}
+      onOpenChange={(open) => setIsBasketSheetOpen(open)}
+    >
       <PageHeader>
         <SheetTrigger asChild>
           <Button variant="outline" size="icon">
@@ -40,10 +45,7 @@ export default function Home() {
         <MenuCategories menuCategories={menuCategories} />
         <MenuItems menuItems={menuItems || []} />
       </div>
-      <OrderSummarySheet
-        isCheckedOut={isCheckedOut}
-        setIsCheckedOut={setIsCheckedOut}
-      />
+      <OrderSummarySheet />
     </Sheet>
   );
 }
