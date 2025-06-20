@@ -2,7 +2,7 @@ import "reflect-metadata";
 import { inject, injectable } from "inversify";
 
 import { ITableRepository } from "@/domain/repositories/i-table-repository";
-import { Table } from "@/domain/models/tables/table";
+import { Table, TableWithUpdate } from "@/domain/models/tables/table";
 import { SupabaseClient } from "@supabase/supabase-js";
 import { Database } from "@/infrastructure/supabase/database.types";
 
@@ -16,5 +16,14 @@ export class TableRepository implements ITableRepository {
     if (error) throw error;
 
     return data;
+  }
+
+  async update(table: TableWithUpdate): Promise<void> {
+    const { error } = await this.supabase
+      .from("Table")
+      .update(table)
+      .eq("tableNumber", table.tableNumber);
+
+    if (error) throw error;
   }
 }

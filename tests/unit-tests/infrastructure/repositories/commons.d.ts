@@ -15,3 +15,7 @@ export type SelectResponse = {
 export type InsertResponse = {
   error: PostgrestError | null;
 };
+
+export type UpdateResponse = {
+  error: PostgrestError | null;
+};

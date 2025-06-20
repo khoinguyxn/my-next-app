@@ -1,15 +1,33 @@
 import { PostgrestError, SupabaseClient } from "@supabase/supabase-js";
-import { Table } from "@/domain/models/tables/table";
+import { Table, TableWithUpdate } from "@/domain/models/tables/table";
 import { ITableRepository } from "@/domain/repositories/i-table-repository";
 import { TableRepository } from "@/infrastructure/repositories/table-repository";
-import { SelectResponse } from "@/tests/unit-tests/infrastructure/repositories/commons";
+import {
+  SelectResponse,
+  UpdateResponse,
+} from "@/tests/unit-tests/infrastructure/repositories/commons";
 import { Database } from "@/infrastructure/supabase/database.types";
 
-const mockSelect = jest.fn<Promise<SelectResponse>, [Table]>();
+const mockSelect = jest.fn<Promise<SelectResponse>, [string?]>();
+
+const mockEq = jest.fn<Promise<UpdateResponse>, [string, number]>();
+
+const mockUpdate = jest
+  .fn<
+    {
+      eq: typeof mockEq;
+    },
+    [TableWithUpdate]
+  >()
+  .mockImplementation(() => ({
+    eq: mockEq,
+  }));
+
 const mockFrom = jest
   .fn<
     {
       select: typeof mockSelect;
+      update: typeof mockUpdate;
     },
     [string]
   >()
@@ -17,6 +35,7 @@ const mockFrom = jest
     if (table === "Table") {
       return {
         select: mockSelect,
+        update: mockUpdate,
       };
     }
 
@@ -101,6 +120,55 @@ describe("TableRepository", () => {
       expect(result).toBeNull();
       expect(mockFrom).toHaveBeenCalledWith("Table");
       expect(mockSelect).toHaveBeenCalledWith("*");
+    });
+  });
+
+  describe("update", () => {
+    it("should return void when successfully update a table", async () => {
+      // Arrange
+      const table: TableWithUpdate = {
+        tableNumber: 1,
+        tableAvailability: "Occupied",
+      };
+
+      mockEq.mockResolvedValue({
+        error: null,
+      });
+
+      // Act
+      await tableRepository.update(table);
+
+      // Assert
+      expect(mockUpdate).toHaveBeenCalledWith(table);
+      expect(mockFrom).toHaveBeenCalledWith("Table");
+    });
+
+    it("should throw an error when unsuccessfully update a table", async () => {
+      // Arrange
+      const table: TableWithUpdate = {
+        tableNumber: 1,
+        tableAvailability: "Occupied",
+      };
+
+      const postgrestError: PostgrestError = {
+        message: "Database error",
+        code: "500",
+        details: "",
+        hint: "",
+        name: "",
+      };
+
+      mockEq.mockResolvedValue({
+        error: postgrestError,
+      });
+
+      // Act and Assert
+      await expect(tableRepository.update(table)).rejects.toEqual(
+        postgrestError,
+      );
+
+      expect(mockUpdate).toHaveBeenCalledWith(table);
+      expect(mockFrom).toHaveBeenCalledWith("Table");
     });
   });
 });
