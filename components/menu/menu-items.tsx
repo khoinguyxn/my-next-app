@@ -11,7 +11,7 @@ import {
 } from "@/components/ui/popover";
 import { Label } from "@/components/ui/label";
 import { useAtom } from "jotai";
-import { menuItemWithQuantityAtomFamily } from "@/models/menu-item-atom";
+import { menuItemWithQuantityAtomFamily } from "@/models/menu-items-atom";
 import { orderItemAtom } from "@/models/order-item-atom";
 import { OrderItemWithInsert } from "@/domain/models/orders/order-item";
 

@@ -13,13 +13,21 @@ import { Sheet, SheetTrigger } from "@/components/ui/sheet";
 import { OrderSummarySheet } from "@/components/menu/order-summary-sheet";
 
 import { useAtom } from "jotai";
-import { isBasketSheetOpenAtom } from "@/models/menu-item-atom";
+import { isBasketSheetOpenAtom, menuItemsAtom } from "@/models/menu-items-atom";
+import { useEffect } from "react";
 
 export default function Home() {
-  const { data: menuItems, isLoading, isError } = useMenuItems();
+  const { data: menuItemsData, isLoading, isError } = useMenuItems();
+  const [menuItems, setMenuItems] = useAtom(menuItemsAtom);
   const [isBasketSheetOpen, setIsBasketSheetOpen] = useAtom(
     isBasketSheetOpenAtom,
   );
+
+  useEffect(() => {
+    if (menuItems.length > 0 || !menuItemsData) return;
+
+    setMenuItems(menuItemsData);
+  }, [menuItems.length, menuItemsData, setMenuItems]);
 
   if (isLoading) return <HomePageLoadingSkeleton />;
   if (isError) return <div>Error loading menu items</div>;

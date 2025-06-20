@@ -1,5 +1,6 @@
 import {
   SheetContent,
+  SheetDescription,
   SheetFooter,
   SheetHeader,
   SheetTitle,
@@ -12,12 +13,11 @@ import { atom, useAtom, useAtomValue, useSetAtom } from "jotai";
 import { orderItemAtom } from "@/models/order-item-atom";
 import {
   isBasketSheetOpenAtom,
-  menuItemAtom,
+  menuItemsAtom,
   menuItemWithQuantityAtomFamily,
-} from "@/models/menu-item-atom";
+} from "@/models/menu-items-atom";
 import { MenuItem } from "@/domain/models/menu-item";
 import { OrderItemWithInsert } from "@/domain/models/orders/order-item";
-import { RESET } from "jotai/utils";
 import { useRouter } from "next/navigation";
 import { selectedTableAtom } from "@/models/tables-atom";
 import { ChangeEvent, useEffect, useState } from "react";
@@ -50,7 +50,7 @@ type CheckoutPhase = "idle" | "validating" | "confirmed" | "paid";
 
 export const OrderSummarySheet = () => {
   const [orderItems, setOrderItems] = useAtom(orderItemAtom);
-  const menuItems = useAtomValue(menuItemAtom);
+  const menuItems = useAtomValue(menuItemsAtom);
   const [selectedTable, setSelectedTable] = useAtom(selectedTableAtom);
   const [isPopoverOpen, setIsPopoverOpen] = useState(false);
   const [checkoutPhase, setCheckoutPhase] = useState<CheckoutPhase>("idle");
@@ -109,6 +109,10 @@ export const OrderSummarySheet = () => {
         <SheetTitle className="scroll-m-20 text-2xl font-semibold tracking-tight">
           Order Summary
         </SheetTitle>
+        <SheetDescription>
+          Here&#39;s a summary of your order. Please review your order before
+          paying.
+        </SheetDescription>
         <div className="flex flex-row">
           <div className="mr-auto flex flex-row items-center gap-2.5">
             <span>Table:</span>
@@ -202,7 +206,6 @@ const OrderItemCard = ({
           filteringOrderItem.menuItemId !== orderItem.menuItemId,
       ),
     );
-    setMenuItemQuantity(RESET);
   };
 
   return (
