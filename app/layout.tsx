@@ -5,8 +5,6 @@ import { Inter } from "next/font/google";
 
 import { AppSidebar } from "@/components/app-sidebar";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
-
-import { JotaiDevTools } from "@/components/jotai-dev-tools";
 import { QueryProvider } from "@/components/providers/query-provider";
 import { ReactNode } from "react";
 
@@ -27,7 +25,6 @@ export default function RootLayout({
 }>) {
   return (
     <>
-      <JotaiDevTools />
       <html lang="en">
         <body className={`${inter.className} antialiased`}>
           <QueryProvider>
