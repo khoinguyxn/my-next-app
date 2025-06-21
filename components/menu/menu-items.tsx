@@ -14,15 +14,71 @@ import { useAtom } from "jotai";
 import { menuItemWithQuantityAtomFamily } from "@/models/menu-items-atom";
 import { orderItemAtom } from "@/models/order-item-atom";
 import { OrderItemWithInsert } from "@/domain/models/orders/order-item";
+import { Skeleton } from "@/components/ui/skeleton";
 
-export const MenuItems = ({ menuItems }: { menuItems: MenuItem[] }) => {
+export const MenuItems = ({ menuItems }: { menuItems: MenuItem[] }) => (
+  <div
+    className="grid w-full max-w-[100vw] grid-flow-row gap-2.5 self-stretch"
+    style={{ gridTemplateColumns: "repeat(auto-fill, minmax(15%, 1fr))" }}
+  >
+    {menuItems.map((menuItem) => (
+      <MenuItemCard key={menuItem.menuItemId} menuItem={menuItem} />
+    ))}
+  </div>
+);
+
+export const MenuItemsSkeleton = () => {
+  const menuItems: MenuItem[] = [
+    {
+      menuCategoryId: 0,
+      menuItemId: 0,
+      name: "menuItem1",
+      price: 0,
+      menuCategory: {
+        menuCategoryId: 0,
+        name: "",
+      },
+    },
+    {
+      menuCategoryId: 0,
+      menuItemId: 1,
+      name: "menuItem2",
+      price: 0,
+      menuCategory: {
+        menuCategoryId: 0,
+        name: "",
+      },
+    },
+    {
+      menuCategoryId: 0,
+      menuItemId: 2,
+      name: "menuItem3",
+      price: 0,
+      menuCategory: {
+        menuCategoryId: 0,
+        name: "",
+      },
+    },
+  ];
+
   return (
-    <div
-      className="grid w-full max-w-[100vw] grid-flow-row gap-2.5 self-stretch"
-      style={{ gridTemplateColumns: "repeat(auto-fill, minmax(15%, 1fr))" }}
-    >
+    <div className="flex w-full flex-row gap-2.5">
       {menuItems.map((menuItem) => (
-        <MenuItemCard key={menuItem.menuItemId} menuItem={menuItem} />
+        <Skeleton key={menuItem.menuItemId}>
+          <Card className="text-accent flex-row items-center border-none bg-inherit p-2.5 shadow-none">
+            <div className="flex flex-col gap-2.5">
+              <CardTitle>{menuItem.name}</CardTitle>
+              <CardContent className="p-0">
+                <span>{menuItem.price}</span>
+              </CardContent>
+            </div>
+            <Button
+              className="ml-auto border-none bg-inherit shadow-none"
+              variant="outline"
+              size="icon"
+            />
+          </Card>
+        </Skeleton>
       ))}
     </div>
   );
