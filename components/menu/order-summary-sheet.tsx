@@ -161,7 +161,18 @@ export const OrderSummarySheet = () => {
         >
           <PopoverTrigger asChild>
             {checkoutPhase === "confirmed" ? (
-              <Button onClick={handlePay}>Pay</Button>
+              <div className="flex flex-row gap-2.5">
+                <Button
+                  className="flex-1"
+                  variant="outline"
+                  onClick={() => setCheckoutPhase("idle")}
+                >
+                  Cancel
+                </Button>
+                <Button className="flex-1" onClick={handlePay}>
+                  Pay
+                </Button>
+              </div>
             ) : (
               <Button onClick={handleCheckout}>Checkout</Button>
             )}
