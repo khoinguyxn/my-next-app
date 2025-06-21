@@ -9,6 +9,7 @@ import { Input } from "./ui/input";
 import { SidebarTrigger } from "./ui/sidebar";
 import { TypographyH3 } from "./ui/typography-h3";
 import { ReactNode } from "react";
+import { Skeleton } from "@/components/ui/skeleton";
 
 export const PageHeader = ({ children }: { children?: ReactNode }) => {
   const pathName = usePathname();
@@ -28,3 +29,5 @@ export const PageHeader = ({ children }: { children?: ReactNode }) => {
     </header>
   );
 };
+
+export const PageHeaderSkeleton = () => <Skeleton className="h-12 w-full" />;

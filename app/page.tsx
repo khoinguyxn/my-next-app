@@ -4,17 +4,17 @@ import { MenuItem } from "@/domain/models/menu-item";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Card, CardContent, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { MenuCategories } from "@/components/menu/menu-categories";
-import { MenuItems } from "@/components/menu/menu-items";
 import useMenuItems from "@/hooks/use-menu-items";
-import { PageHeader } from "@/components/page-header";
-import { ShoppingBasketIcon } from "lucide-react";
-import { Sheet, SheetTrigger } from "@/components/ui/sheet";
-import { OrderSummarySheet } from "@/components/menu/order-summary-sheet";
 
 import { useAtom } from "jotai";
 import { isBasketSheetOpenAtom, menuItemsAtom } from "@/models/menu-items-atom";
 import { useEffect } from "react";
+import { PageHeader, PageHeaderSkeleton } from "@/components/page-header";
+import { Sheet, SheetTrigger } from "@/components/ui/sheet";
+import { ShoppingBasketIcon } from "lucide-react";
+import { MenuCategories } from "@/components/menu/menu-categories";
+import { MenuItems } from "@/components/menu/menu-items";
+import { OrderSummarySheet } from "@/components/menu/order-summary-sheet";
 
 export default function Home() {
   const { data: menuItemsData, isLoading, isError } = useMenuItems();
@@ -133,9 +133,12 @@ const HomePageLoadingSkeleton = () => {
   };
 
   return (
-    <div className="flex flex-1 flex-col items-start justify-start gap-5">
-      <MenuCategoriesSkeleton />
-      <MenuItemsSkeleton />
-    </div>
+    <>
+      <PageHeaderSkeleton />
+      <div className="flex flex-1 flex-col items-start justify-start gap-5">
+        <MenuCategoriesSkeleton />
+        <MenuItemsSkeleton />
+      </div>
+    </>
   );
 };
