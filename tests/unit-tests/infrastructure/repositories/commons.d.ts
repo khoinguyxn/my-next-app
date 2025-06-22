@@ -8,6 +8,7 @@ export type SelectResponse = {
     | MenuItem[]
     | Table[]
     | (OrderWithInsert & { orderNumber: number })[]
+    | Order[]
     | null;
   error: PostgrestError | null;
 };

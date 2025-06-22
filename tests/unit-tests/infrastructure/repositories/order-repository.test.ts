@@ -1,7 +1,7 @@
 import { PostgrestError, SupabaseClient } from "@supabase/supabase-js";
 import { IOrderRepository } from "@/domain/repositories/i-order-repository";
 import { OrderRepository } from "@/infrastructure/repositories/order-repository";
-import { OrderWithInsert } from "@/domain/models/orders/order";
+import { Order, OrderWithInsert } from "@/domain/models/orders/order";
 import { Database } from "@/infrastructure/supabase/database.types";
 import { SelectResponse } from "@/tests/unit-tests/infrastructure/repositories/commons";
 
@@ -21,6 +21,7 @@ const mockInsert = jest
 const mockFrom = jest
   .fn<
     {
+      select: typeof mockSelect;
       insert: typeof mockInsert;
     },
     [string]
@@ -28,6 +29,7 @@ const mockFrom = jest
   .mockImplementation((table: string) => {
     if (table === "Order") {
       return {
+        select: mockSelect,
         insert: mockInsert,
       };
     }
@@ -46,6 +48,75 @@ describe("OrderRepository", () => {
     jest.clearAllMocks();
 
     orderRepository = new OrderRepository(mockSupabase);
+  });
+
+  describe("getAll", () => {
+    it("should return orders when Supabase returns data", async () => {
+      // Arrange
+      const orders: Order[] = [
+        {
+          createdAt: null,
+          orderNumber: 0,
+          received: null,
+          tableNumber: 0,
+        },
+        {
+          createdAt: null,
+          orderNumber: 1,
+          received: null,
+          tableNumber: 0,
+        },
+      ];
+
+      mockSelect.mockResolvedValue({
+        data: orders,
+        error: null,
+      });
+
+      // Act
+      const result = await orderRepository.getAll();
+
+      // Assert
+      expect(result).toEqual(orders);
+      expect(mockFrom).toHaveBeenCalledWith("Order");
+      expect(mockSelect).toHaveBeenCalledWith("*");
+    });
+
+    it("should throw an error when Supabase fails to return data", async () => {
+      // Arrange
+      const orders: Order[] = [
+        {
+          createdAt: null,
+          orderNumber: 0,
+          received: null,
+          tableNumber: 0,
+        },
+        {
+          createdAt: null,
+          orderNumber: 1,
+          received: null,
+          tableNumber: 0,
+        },
+      ];
+
+      const error: PostgrestError = {
+        details: "",
+        message: "Database error",
+        code: "500",
+        hint: "",
+        name: "",
+      };
+
+      mockSelect.mockResolvedValue({
+        data: orders,
+        error: error,
+      });
+
+      // Act and Asset
+      await expect(orderRepository.getAll()).rejects.toEqual(error);
+      expect(mockFrom).toHaveBeenCalledWith("Order");
+      expect(mockSelect).toHaveBeenCalledWith("*");
+    });
   });
 
   describe("create", () => {
