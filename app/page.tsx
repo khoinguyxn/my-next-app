@@ -51,7 +51,7 @@ export default function Home() {
       </PageHeader>
       <div className="flex flex-1 flex-col gap-5">
         <MenuCategories menuCategories={menuCategories} />
-        <MenuItems menuItems={menuItems || []} />
+        <MenuItems />
       </div>
       <OrderSummarySheet />
     </Sheet>

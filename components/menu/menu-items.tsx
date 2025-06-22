@@ -10,22 +10,31 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { Label } from "@/components/ui/label";
-import { useAtom } from "jotai";
-import { menuItemWithQuantityAtomFamily } from "@/models/menu-items-atom";
+import { useAtom, useAtomValue } from "jotai";
+import {
+  filteredMenuItemsAtomFamily,
+  menuItemWithQuantityAtomFamily,
+} from "@/models/menu-items-atom";
 import { orderItemAtom } from "@/models/order-item-atom";
 import { OrderItemWithInsert } from "@/domain/models/orders/order-item";
 import { Skeleton } from "@/components/ui/skeleton";
+import { usePathname } from "next/navigation";
 
-export const MenuItems = ({ menuItems }: { menuItems: MenuItem[] }) => (
-  <div
-    className="grid w-full max-w-[100vw] grid-flow-row gap-2.5 self-stretch"
-    style={{ gridTemplateColumns: "repeat(auto-fill, minmax(15%, 1fr))" }}
-  >
-    {menuItems.map((menuItem) => (
-      <MenuItemCard key={menuItem.menuItemId} menuItem={menuItem} />
-    ))}
-  </div>
-);
+export const MenuItems = () => {
+  const pathName = usePathname();
+  const filteredMenuItems = useAtomValue(filteredMenuItemsAtomFamily(pathName));
+
+  return (
+    <div
+      className="grid w-full max-w-[100vw] grid-flow-row gap-2.5 self-stretch"
+      style={{ gridTemplateColumns: "repeat(auto-fill, minmax(15%, 1fr))" }}
+    >
+      {filteredMenuItems.map((menuItem) => (
+        <MenuItemCard key={menuItem.menuItemId} menuItem={menuItem} />
+      ))}
+    </div>
+  );
+};
 
 export const MenuItemsSkeleton = () => {
   const menuItems: MenuItem[] = [
