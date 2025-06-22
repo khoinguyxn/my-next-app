@@ -15,6 +15,7 @@ import {
 } from "@/components/menu/menu-categories";
 import { MenuItems, MenuItemsSkeleton } from "@/components/menu/menu-items";
 import { OrderSummarySheet } from "@/components/menu/order-summary-sheet";
+import { SearchBar } from "@/components/search-bar";
 
 export default function Home() {
   const { data: menuItemsData, isLoading, isError } = useMenuItems();
@@ -42,7 +43,7 @@ export default function Home() {
       open={isBasketSheetOpen}
       onOpenChange={(open) => setIsBasketSheetOpen(open)}
     >
-      <PageHeader>
+      <PageHeader searchBar={<SearchBar />}>
         <SheetTrigger asChild>
           <Button variant="outline" size="icon">
             <ShoppingBasketIcon />
