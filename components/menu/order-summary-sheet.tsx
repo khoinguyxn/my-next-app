@@ -34,7 +34,7 @@ import {
   NumberFormatOptions,
 } from "@react-input/number-format";
 import { cn } from "@/lib/utils";
-import useOrder from "@/hooks/use-order";
+import useCreateOrders from "@/hooks/use-create-orders";
 import { OrderWithInsert } from "@/domain/models/orders/order";
 import useMutateTables from "@/hooks/use-mutate-tables";
 
@@ -57,7 +57,7 @@ export const OrderSummarySheet = () => {
   const [checkoutPhase, setCheckoutPhase] = useState<CheckoutPhase>("idle");
   const [receivedAmount, setReceivedAmount] = useAtom(receivedAtom);
   const setIsBasketSheetOpen = useSetAtom(isBasketSheetOpenAtom);
-  const { mutateAsync: doCreateOrder } = useOrder();
+  const { mutateAsync: doCreateOrder } = useCreateOrders();
   const { mutateAsync: doUpdateTable } = useMutateTables();
 
   const router = useRouter();

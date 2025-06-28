@@ -5,7 +5,7 @@ import { IOrderService } from "@/domain/services/order-service";
 import { OrderItemWithInsert } from "@/domain/models/orders/order-item";
 import { IOrderItemService } from "@/domain/services/order-item-service";
 
-export default function useOrder() {
+export default function useCreateOrders() {
   const createOrder = (order: OrderWithInsert) => {
     const orderService = container.get<IOrderService>("OrderService");
 
