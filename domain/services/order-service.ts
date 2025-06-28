@@ -1,9 +1,11 @@
 import "reflect-metadata";
 import { inject, injectable } from "inversify";
 import type { IOrderRepository } from "@/domain/repositories/i-order-repository";
-import { OrderWithInsert } from "@/domain/models/orders/order";
+import { Order, OrderWithInsert } from "@/domain/models/orders/order";
 
 export interface IOrderService {
+  getAll(): Promise<Order[]>;
+
   create(order: OrderWithInsert): Promise<number>;
 }
 
@@ -13,6 +15,10 @@ export class OrderService implements IOrderService {
     @inject("OrderRepository")
     private orderRepository: IOrderRepository,
   ) {}
+
+  async getAll(): Promise<Order[]> {
+    return await this.orderRepository.getAll();
+  }
 
   async create(order: OrderWithInsert): Promise<number> {
     return await this.orderRepository.create(order);
