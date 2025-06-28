@@ -172,5 +172,25 @@ describe("OrderRepository", () => {
       expect(mockInsert).toHaveBeenCalledWith(order);
       expect(mockFrom).toHaveBeenCalledWith("Order");
     });
+
+    it("should throw an error when fail to retrieve back orders after insertion", async () => {
+      // Arrange
+      const error = new Error("No data returned from the database");
+
+      const order: OrderWithInsert = {
+        tableNumber: 1,
+      };
+
+      mockSelect.mockResolvedValue({
+        error: null,
+        data: null,
+      });
+
+      // Act and Assert
+      await expect(orderRepository.create(order)).rejects.toEqual(error);
+
+      expect(mockInsert).toHaveBeenCalledWith(order);
+      expect(mockFrom).toHaveBeenCalledWith("Order");
+    });
   });
 });
