@@ -1,9 +1,8 @@
 import { renderHook, waitFor } from "@testing-library/react";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { IOrderService } from "@/domain/services/order-service";
 import { Order } from "@/domain/models/orders/order";
-import { ReactNode } from "react";
 import useGetOrders from "@/hooks/use-get-orders";
+import { createTestQueryClientProviderWrapper } from "@/tests/hooks/commons";
 
 const orders: Order[] = [
   {
@@ -39,22 +38,6 @@ jest.mock("@/infrastructure/container", () => ({
   },
 }));
 
-const createWrapper = () => {
-  const queryClient = new QueryClient({
-    defaultOptions: {
-      queries: {
-        retry: false,
-        gcTime: 0,
-      },
-    },
-  });
-
-  // eslint-disable-next-line react/display-name
-  return ({ children }: { children: ReactNode }) => (
-    <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
-  );
-};
-
 describe("useGetOrders", () => {
   beforeEach(() => {
     jest.clearAllMocks();
@@ -63,7 +46,7 @@ describe("useGetOrders", () => {
   it("should fetch orders successfully", async () => {
     // Arrange
     (mockOrderService.getAll as jest.Mock).mockResolvedValue(orders);
-    const wrapper = createWrapper();
+    const wrapper = createTestQueryClientProviderWrapper();
 
     // Act
     const { result } = renderHook(() => useGetOrders(), { wrapper });
@@ -87,7 +70,7 @@ describe("useGetOrders", () => {
       new Error(errorMessage),
     );
 
-    const wrapper = createWrapper();
+    const wrapper = createTestQueryClientProviderWrapper();
 
     // Act
     const { result } = renderHook(() => useGetOrders(), { wrapper });

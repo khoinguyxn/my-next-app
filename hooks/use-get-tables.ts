@@ -3,7 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { Table } from "@/domain/models/tables/table";
 import { ITableService } from "@/domain/services/table-service";
 
-export default function useTables() {
+export default function useGetTables() {
   const fetchTables = (): Promise<Table[]> => {
     const tableService = container.get<ITableService>("TableService");
 

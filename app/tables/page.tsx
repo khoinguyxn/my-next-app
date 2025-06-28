@@ -17,7 +17,7 @@ import {
 } from "@/domain/models/tables/table-availabilities";
 import type { Table } from "@/domain/models/tables/table";
 import { TableSeatEnum } from "@/domain/models/tables/table-seats";
-import useTables from "@/hooks/use-tables";
+import useGetTables from "@/hooks/use-get-tables";
 import { useRouter } from "next/navigation";
 import { PageHeader, PageHeaderSkeleton } from "@/components/page-header";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -33,7 +33,7 @@ export default function TablesPage() {
   const [tables, setTables] = useAtom(tablesAtom);
   const setSelectedTable = useSetAtom(selectedTableAtom);
   const setIsTablesLoading = useSetAtom(isTablesLoadingAtom);
-  const { data: tablesData, isLoading, isError } = useTables();
+  const { data: tablesData, isLoading, isError } = useGetTables();
 
   const router = useRouter();
 
