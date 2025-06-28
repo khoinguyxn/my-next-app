@@ -3,7 +3,7 @@ import { IOrderRepository } from "@/domain/repositories/i-order-repository";
 import { OrderRepository } from "@/infrastructure/repositories/order-repository";
 import { Order, OrderWithInsert } from "@/domain/models/orders/order";
 import { Database } from "@/infrastructure/supabase/database.types";
-import { SelectResponse } from "@/tests/unit-tests/infrastructure/repositories/commons";
+import { SelectResponse } from "@/tests/infrastructure/repositories/commons";
 
 const mockSelect = jest.fn<Promise<SelectResponse>, [string?]>();
 

@@ -3,7 +3,7 @@ import { IMenuItemRepository } from "@/domain/repositories/i-menu-item-repositor
 import { MenuItemRepository } from "@/infrastructure/repositories/menu-item-repository";
 import { MenuItem } from "@/domain/models/menu-item";
 import { PostgrestError, SupabaseClient } from "@supabase/supabase-js";
-import { SelectResponse } from "@/tests/unit-tests/infrastructure/repositories/commons";
+import { SelectResponse } from "@/tests/infrastructure/repositories/commons";
 import { Database } from "@/infrastructure/supabase/database.types";
 
 const mockSelect = jest.fn<Promise<SelectResponse>, [MenuItem]>();

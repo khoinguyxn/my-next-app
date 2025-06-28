@@ -4,7 +4,7 @@ import { Database } from "@/infrastructure/supabase/database.types";
 import {
   InsertResponse,
   SelectResponse,
-} from "@/tests/unit-tests/infrastructure/repositories/commons";
+} from "@/tests/infrastructure/repositories/commons";
 import { OrderItemWithInsert } from "@/domain/models/orders/order-item";
 import { OrderItemRepository } from "@/infrastructure/repositories/order-item-repository";
 

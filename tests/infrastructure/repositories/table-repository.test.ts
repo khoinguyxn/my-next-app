@@ -5,7 +5,7 @@ import { TableRepository } from "@/infrastructure/repositories/table-repository"
 import {
   SelectResponse,
   UpdateResponse,
-} from "@/tests/unit-tests/infrastructure/repositories/commons";
+} from "@/tests/infrastructure/repositories/commons";
 import { Database } from "@/infrastructure/supabase/database.types";
 
 const mockSelect = jest.fn<Promise<SelectResponse>, [string?]>();
