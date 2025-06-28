@@ -29,12 +29,14 @@ describe("OrderService", () => {
           orderNumber: 0,
           received: null,
           tableNumber: 0,
+          orderItems: [],
         },
         {
           createdAt: null,
           orderNumber: 1,
           received: null,
           tableNumber: 0,
+          orderItems: [],
         },
       ];
 

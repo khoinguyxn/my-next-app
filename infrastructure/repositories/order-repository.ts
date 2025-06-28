@@ -10,7 +10,9 @@ export class OrderRepository implements IOrderRepository {
   constructor(@inject("Supabase") private supabase: SupabaseClient<Database>) {}
 
   async getAll(): Promise<Order[]> {
-    const { data, error } = await this.supabase.from("Order").select("*");
+    const { data, error } = await this.supabase
+      .from("Order")
+      .select("*, orderItems: OrderItem(*)");
 
     if (error) throw error;
 

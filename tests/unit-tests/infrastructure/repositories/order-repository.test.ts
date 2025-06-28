@@ -59,12 +59,14 @@ describe("OrderRepository", () => {
           orderNumber: 0,
           received: null,
           tableNumber: 0,
+          orderItems: [],
         },
         {
           createdAt: null,
           orderNumber: 1,
           received: null,
           tableNumber: 0,
+          orderItems: [],
         },
       ];
 
@@ -79,7 +81,7 @@ describe("OrderRepository", () => {
       // Assert
       expect(result).toEqual(orders);
       expect(mockFrom).toHaveBeenCalledWith("Order");
-      expect(mockSelect).toHaveBeenCalledWith("*");
+      expect(mockSelect).toHaveBeenCalledWith("*, orderItems: OrderItem(*)");
     });
 
     it("should throw an error when Supabase fails to return data", async () => {
@@ -90,12 +92,14 @@ describe("OrderRepository", () => {
           orderNumber: 0,
           received: null,
           tableNumber: 0,
+          orderItems: [],
         },
         {
           createdAt: null,
           orderNumber: 1,
           received: null,
           tableNumber: 0,
+          orderItems: [],
         },
       ];
 
@@ -115,7 +119,7 @@ describe("OrderRepository", () => {
       // Act and Asset
       await expect(orderRepository.getAll()).rejects.toEqual(error);
       expect(mockFrom).toHaveBeenCalledWith("Order");
-      expect(mockSelect).toHaveBeenCalledWith("*");
+      expect(mockSelect).toHaveBeenCalledWith("*, orderItems: OrderItem(*)");
     });
   });
 

@@ -1,5 +1,5 @@
 import { MenuItem } from "@/domain/models/menu-item";
 
 export interface IMenuItemRepository {
-  getAll(): Promise<MenuItem[]>;
+  getAll(): Promise<MenuItem[] | null>;
 }

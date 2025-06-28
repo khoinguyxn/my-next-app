@@ -5,7 +5,7 @@ import {
 import { MenuItem } from "@/domain/models/menu-item";
 import { IMenuItemRepository } from "@/domain/repositories/i-menu-item-repository";
 
-const mockGetAll = jest.fn<Promise<MenuItem[]>, []>();
+const mockGetAll = jest.fn<Promise<MenuItem[] | null>, []>();
 
 describe("MenuItemService", () => {
   let menuItemService: IMenuItemService;
