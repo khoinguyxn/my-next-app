@@ -3,12 +3,7 @@ import {
   OrderItemService,
 } from "@/domain/services/order-item-service";
 import { IOrderItemRepository } from "@/domain/repositories/i-order-item-repository";
-import {
-  OrderItem,
-  OrderItemWithInsert,
-} from "@/domain/models/orders/order-item";
-
-const mockGetAll = jest.fn<Promise<OrderItem[]>, [number]>();
+import { OrderItemWithInsert } from "@/domain/models/orders/order-item";
 
 const mockCreate = jest.fn<Promise<void>, [OrderItemWithInsert[]]>();
 
@@ -19,40 +14,10 @@ describe("OrderItemService", () => {
     jest.clearAllMocks();
 
     const mockOrderItemRepository: IOrderItemRepository = {
-      getAll: mockGetAll,
       create: mockCreate,
     };
 
     orderItemService = new OrderItemService(mockOrderItemRepository);
-  });
-
-  describe("getAll", () => {
-    it("should return orderItems when successful", async () => {
-      // Arrange
-      const orderNumber = 1;
-
-      const orderItems: OrderItem[] = [
-        {
-          menuItemId: 0,
-          orderNumber: orderNumber,
-          quantity: 0,
-        },
-        {
-          menuItemId: 0,
-          orderNumber: orderNumber,
-          quantity: 0,
-        },
-      ];
-
-      mockGetAll.mockResolvedValue(orderItems);
-
-      // Act
-      const result = await orderItemService.getAll(orderNumber);
-
-      // Assert
-      expect(result).toEqual(orderItems);
-      expect(mockGetAll).toHaveBeenCalledTimes(1);
-    });
   });
 
   describe("create", () => {
