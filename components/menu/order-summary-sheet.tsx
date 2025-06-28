@@ -138,8 +138,7 @@ export const OrderSummarySheet = () => {
             (menuItem) => menuItem.menuItemId === orderItem.menuItemId,
           );
 
-          if (menuItem === undefined)
-            return <div key={orderItem.orderItemId} />;
+          if (menuItem === undefined) return <div key={orderItem.menuItemId} />;
 
           return (
             <OrderItemCard

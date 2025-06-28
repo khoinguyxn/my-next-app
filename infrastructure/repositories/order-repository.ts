@@ -4,13 +4,10 @@ import { SupabaseClient } from "@supabase/supabase-js";
 import { Database } from "@/infrastructure/supabase/database.types";
 import { IOrderRepository } from "@/domain/repositories/i-order-repository";
 import { Order, OrderWithInsert } from "@/domain/models/orders/order";
-import { SYMBOLS } from "@/domain/models/symbols";
 
 @injectable("Request")
 export class OrderRepository implements IOrderRepository {
-  constructor(
-    @inject(SYMBOLS.SupabaseClient) private supabase: SupabaseClient<Database>,
-  ) {}
+  constructor(@inject("Supabase") private supabase: SupabaseClient<Database>) {}
 
   async getAll(): Promise<Order[]> {
     const { data, error } = await this.supabase.from("Order").select("*");

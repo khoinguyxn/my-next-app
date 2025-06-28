@@ -19,30 +19,27 @@ import {
   IOrderItemService,
   OrderItemService,
 } from "@/domain/services/order-item-service";
-import { SYMBOLS } from "@/domain/models/symbols";
 
 const container = new Container();
 
 const supabase = createSupabaseBrowserClient();
 
-container.bind(SYMBOLS.SupabaseClient).toConstantValue(supabase);
+container.bind("Supabase").toConstantValue(supabase);
 
 container
-  .bind<IMenuItemRepository>(SYMBOLS.MenuItemRepository)
+  .bind<IMenuItemRepository>("MenuItemRepository")
   .to(MenuItemRepository);
-container.bind<IMenuItemService>(SYMBOLS.MenuItemService).to(MenuItemService);
+container.bind<IMenuItemService>("MenuItemService").to(MenuItemService);
 
-container.bind<ITableRepository>(SYMBOLS.TableRepository).to(TableRepository);
-container.bind<ITableService>(SYMBOLS.TableService).to(TableService);
+container.bind<ITableRepository>("TableRepository").to(TableRepository);
+container.bind<ITableService>("TableService").to(TableService);
 
-container.bind<IOrderRepository>(SYMBOLS.OrderRepository).to(OrderRepository);
-container.bind<IOrderService>(SYMBOLS.OrderService).to(OrderService);
+container.bind<IOrderRepository>("OrderRepository").to(OrderRepository);
+container.bind<IOrderService>("OrderService").to(OrderService);
 
 container
-  .bind<IOrderItemRepository>(SYMBOLS.OrderItemRepository)
+  .bind<IOrderItemRepository>("OrderItemRepository")
   .to(OrderItemRepository);
-container
-  .bind<IOrderItemService>(SYMBOLS.OrderItemService)
-  .to(OrderItemService);
+container.bind<IOrderItemService>("OrderItemService").to(OrderItemService);
 
 export { container };

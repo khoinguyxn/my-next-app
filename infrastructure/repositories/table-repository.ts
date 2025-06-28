@@ -5,13 +5,10 @@ import { ITableRepository } from "@/domain/repositories/i-table-repository";
 import { Table, TableWithUpdate } from "@/domain/models/tables/table";
 import { SupabaseClient } from "@supabase/supabase-js";
 import { Database } from "@/infrastructure/supabase/database.types";
-import { SYMBOLS } from "@/domain/models/symbols";
 
 @injectable("Request")
 export class TableRepository implements ITableRepository {
-  constructor(
-    @inject(SYMBOLS.SupabaseClient) private supabase: SupabaseClient<Database>,
-  ) {}
+  constructor(@inject("Supabase") private supabase: SupabaseClient<Database>) {}
 
   async getAll(): Promise<Table[]> {
     const { data, error } = await this.supabase.from("Table").select("*");

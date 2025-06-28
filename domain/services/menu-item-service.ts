@@ -3,7 +3,6 @@ import { inject, injectable } from "inversify";
 
 import type { IMenuItemRepository } from "../repositories/i-menu-item-repository";
 import type { MenuItem } from "../models/menu-item";
-import { SYMBOLS } from "@/domain/models/symbols";
 
 export interface IMenuItemService {
   getAll(): Promise<MenuItem[]>;
@@ -12,7 +11,7 @@ export interface IMenuItemService {
 @injectable("Request")
 export class MenuItemService implements IMenuItemService {
   constructor(
-    @inject(SYMBOLS.MenuItemRepository)
+    @inject("MenuItemRepository")
     private menuItemRepository: IMenuItemRepository,
   ) {}
 

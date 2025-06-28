@@ -3,7 +3,6 @@ import { inject, injectable } from "inversify";
 
 import type { ITableRepository } from "@/domain/repositories/i-table-repository";
 import { Table, TableWithUpdate } from "@/domain/models/tables/table";
-import { SYMBOLS } from "@/domain/models/symbols";
 
 export interface ITableService {
   getAll(): Promise<Table[]>;
@@ -13,7 +12,7 @@ export interface ITableService {
 @injectable("Request")
 export class TableService implements ITableService {
   constructor(
-    @inject(SYMBOLS.TableRepository)
+    @inject("TableRepository")
     private tableRepository: ITableRepository,
   ) {}
 
