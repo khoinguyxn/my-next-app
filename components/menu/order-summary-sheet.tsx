@@ -36,7 +36,7 @@ import {
 import { cn } from "@/lib/utils";
 import useCreateOrders from "@/hooks/use-create-orders";
 import { OrderWithInsert } from "@/domain/models/orders/order";
-import useMutateTables from "@/hooks/use-mutate-tables";
+import useUpdateTables from "@/hooks/use-update-tables";
 
 const receivedAtom = atom<string>();
 const currencyInputOptions: NumberFormatOptions = {
@@ -58,7 +58,7 @@ export const OrderSummarySheet = () => {
   const [receivedAmount, setReceivedAmount] = useAtom(receivedAtom);
   const setIsBasketSheetOpen = useSetAtom(isBasketSheetOpenAtom);
   const { mutateAsync: doCreateOrder } = useCreateOrders();
-  const { mutateAsync: doUpdateTable } = useMutateTables();
+  const { mutateAsync: doUpdateTable } = useUpdateTables();
 
   const router = useRouter();
 

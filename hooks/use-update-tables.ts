@@ -3,7 +3,7 @@ import { ITableService } from "@/domain/services/table-service";
 import { TableWithUpdate } from "@/domain/models/tables/table";
 import { useMutation } from "@tanstack/react-query";
 
-export default function useMutateTables() {
+export default function useUpdateTables() {
   const updateTable = (table: TableWithUpdate) => {
     const tableService = container.get<ITableService>("TableService");
 
