@@ -3,7 +3,7 @@ import { container } from "@/infrastructure/container";
 import { IMenuItemService } from "@/domain/services/menu-item-service";
 import { useQuery } from "@tanstack/react-query";
 
-export default function useMenuItems() {
+export default function useGetMenuItems() {
   const fetchMenuItems = (): Promise<MenuItem[]> => {
     const menuItemService = container.get<IMenuItemService>("MenuItemService");
 

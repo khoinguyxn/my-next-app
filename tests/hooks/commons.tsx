@@ -6,6 +6,8 @@ import { Order, OrderWithInsert } from "@/domain/models/orders/order";
 import { IOrderService } from "@/domain/services/order-service";
 import { IOrderItemService } from "@/domain/services/order-item-service";
 import { OrderItemWithInsert } from "@/domain/models/orders/order-item";
+import { MenuItem } from "@/domain/models/menu-item";
+import { IMenuItemService } from "@/domain/services/menu-item-service";
 
 export const createTestQueryClientProviderWrapper = () => {
   const queryClient = new QueryClient({
@@ -35,4 +37,8 @@ export const createMockOrderService = (): IOrderService => ({
 
 export const createMockOrderItemService = (): IOrderItemService => ({
   create: jest.fn<Promise<void>, [OrderItemWithInsert[]]>(),
+});
+
+export const createMockMenuItemService = (): IMenuItemService => ({
+  getAll: jest.fn<Promise<MenuItem[]>, []>(),
 });

@@ -1,7 +1,7 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import useMenuItems from "@/hooks/use-menu-items";
+import useGetMenuItems from "@/hooks/use-get-menu-items";
 
 import { useAtom } from "jotai";
 import { isBasketSheetOpenAtom, menuItemsAtom } from "@/models/menu-items-atom";
@@ -18,7 +18,7 @@ import { OrderSummarySheet } from "@/components/menu/order-summary-sheet";
 import { SearchBar } from "@/components/search-bar";
 
 export default function Home() {
-  const { data: menuItemsData, isLoading, isError } = useMenuItems();
+  const { data: menuItemsData, isLoading, isError } = useGetMenuItems();
   const [menuItems, setMenuItems] = useAtom(menuItemsAtom);
   const [isBasketSheetOpen, setIsBasketSheetOpen] = useAtom(
     isBasketSheetOpenAtom,
