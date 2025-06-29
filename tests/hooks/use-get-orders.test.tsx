@@ -1,8 +1,10 @@
 import { renderHook, waitFor } from "@testing-library/react";
-import { IOrderService } from "@/domain/services/order-service";
 import { Order } from "@/domain/models/orders/order";
 import useGetOrders from "@/hooks/use-get-orders";
-import { createTestQueryClientProviderWrapper } from "@/tests/hooks/commons";
+import {
+  createMockOrderService,
+  createTestQueryClientProviderWrapper,
+} from "@/tests/hooks/commons";
 
 const orders: Order[] = [
   {
@@ -21,10 +23,7 @@ const orders: Order[] = [
   },
 ];
 
-const mockOrderService: IOrderService = {
-  getAll: jest.fn<Promise<Order[]>, []>(),
-  create: jest.fn(),
-};
+const mockOrderService = createMockOrderService();
 
 jest.mock("@/infrastructure/container", () => ({
   container: {
