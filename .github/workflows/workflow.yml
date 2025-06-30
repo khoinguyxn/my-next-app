@@ -1,4 +1,4 @@
-name: Dev deployment
+name: General Workflow
 
 on:
   push:
