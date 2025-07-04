@@ -7,6 +7,7 @@ import { AppSidebar } from "@/components/app-sidebar";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { QueryProvider } from "@/components/providers/query-provider";
 import { ReactNode } from "react";
+import { Toaster } from "@/components/ui/sonner";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -33,6 +34,12 @@ export default function RootLayout({
               <SidebarInset className="gap-5 p-5">{children}</SidebarInset>
             </SidebarProvider>
           </QueryProvider>
+          <Toaster
+            richColors
+            closeButton
+            position="bottom-right"
+            duration={4000}
+          />
         </body>
       </html>
     </>

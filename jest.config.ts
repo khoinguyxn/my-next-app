@@ -17,6 +17,7 @@ const config: Config = {
     "<rootDir>/features/",
   ],
   testEnvironment: "jsdom",
+  setupFilesAfterEnv: ["<rootDir>/react-jest.setup.ts"],
 };
 
 export default createJestConfig(config);
