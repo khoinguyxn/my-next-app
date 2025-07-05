@@ -6,6 +6,7 @@ import { MenuItem } from "@/domain/models/menu-item";
 import { IMenuItemRepository } from "@/domain/repositories/i-menu-item-repository";
 
 const mockGetAll = jest.fn<Promise<MenuItem[] | null>, []>();
+const mockGet = jest.fn<Promise<MenuItem | null>, [number]>();
 
 describe("MenuItemService", () => {
   let menuItemService: IMenuItemService;
@@ -15,6 +16,7 @@ describe("MenuItemService", () => {
 
     const mockMenuItemRepository: IMenuItemRepository = {
       getAll: mockGetAll,
+      get: mockGet,
     };
 
     menuItemService = new MenuItemService(mockMenuItemRepository);
@@ -68,6 +70,32 @@ describe("MenuItemService", () => {
       // Assert
       expect(result).toEqual([]);
       expect(mockGetAll).toHaveBeenCalledTimes(1);
+    });
+  });
+
+  describe("get", () => {
+    it("should return menu item when successful", async () => {
+      // Arrange
+      const menuItemId = 1;
+      const menuItem: MenuItem = {
+        menuCategoryId: 1,
+        menuItemId,
+        name: "",
+        price: 0,
+        menuCategory: {
+          menuCategoryId: 1,
+          name: "",
+        },
+      };
+
+      mockGet.mockResolvedValue(menuItem);
+
+      // Act
+      const result = await menuItemService.get(menuItemId);
+
+      // Assert
+      expect(result).toEqual(menuItem);
+      expect(mockGet).toHaveBeenCalledWith(menuItemId);
     });
   });
 });

@@ -10,6 +10,18 @@ import { Database } from "@/infrastructure/supabase/database.types";
 export class MenuItemRepository implements IMenuItemRepository {
   constructor(@inject("Supabase") private supabase: SupabaseClient<Database>) {}
 
+  async get(menuItemId: number): Promise<MenuItem | null> {
+    const { data, error } = await this.supabase
+      .from("MenuItem")
+      .select("*, menuCategory: MenuCategory(*)")
+      .eq("menuItemId", menuItemId)
+      .single();
+
+    if (error) throw error;
+
+    return data;
+  }
+
   async getAll(): Promise<MenuItem[] | null> {
     const { data, error } = await this.supabase
       .from("MenuItem")

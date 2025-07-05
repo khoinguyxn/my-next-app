@@ -10,7 +10,7 @@ import { Database } from "@/infrastructure/supabase/database.types";
 export class TableRepository implements ITableRepository {
   constructor(@inject("Supabase") private supabase: SupabaseClient<Database>) {}
 
-  async getAll(): Promise<Table[]> {
+  async getAll(): Promise<Table[] | null> {
     const { data, error } = await this.supabase.from("Table").select("*");
 
     if (error) throw error;

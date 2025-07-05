@@ -2,7 +2,7 @@ import { ITableService, TableService } from "@/domain/services/table-service";
 import { ITableRepository } from "@/domain/repositories/i-table-repository";
 import { Table, TableWithUpdate } from "@/domain/models/tables/table";
 
-const mockGetAll = jest.fn<Promise<Table[]>, []>();
+const mockGetAll = jest.fn<Promise<Table[] | null>, []>();
 const mockUpdate = jest.fn<Promise<void>, [TableWithUpdate]>();
 
 describe("TableService", () => {
@@ -47,7 +47,7 @@ describe("TableService", () => {
 
     it("should return an empty list when repository returns null", async () => {
       // Arrange
-      const mockTables: Table[] = [];
+      const mockTables = null;
 
       mockGetAll.mockResolvedValue(mockTables);
 
