@@ -1,11 +1,20 @@
 import { ComponentProps, MouseEvent, ReactNode } from "react";
-import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import {
+  act,
+  fireEvent,
+  render,
+  renderHook,
+  screen,
+  waitFor,
+} from "@testing-library/react";
 import { type DateRange, DayPicker } from "react-day-picker";
 import { Button, buttonVariants } from "@/components/ui/button";
 import DateTimePicker from "@/components/date-time-picker";
 import type { VariantProps } from "class-variance-authority";
 import { toast } from "sonner";
 import userEvent from "@testing-library/user-event";
+import { Provider, useAtom } from "jotai";
+import { dateRangeAtom } from "@/models/orders-atom";
 import advanceTimersByTime = jest.advanceTimersByTime;
 
 // Arrange
@@ -215,6 +224,22 @@ describe("DateTimePicker", () => {
     jest.useFakeTimers();
   });
 
+  beforeEach(() => {
+    // Arrange
+    const wrapper = ({ children }: { children: ReactNode }) => (
+      <Provider>{children}</Provider>
+    );
+
+    const { result } = renderHook(() => useAtom(dateRangeAtom), { wrapper });
+
+    act(() => {
+      result.current[1](undefined);
+    });
+
+    // Act
+    render(<DateTimePicker />, { wrapper });
+  });
+
   afterEach(() => {
     jest.runOnlyPendingTimers();
     jest.useRealTimers();
@@ -222,9 +247,6 @@ describe("DateTimePicker", () => {
 
   describe("Initial State", () => {
     it("should render with default 'Select date' text when no date is selected", () => {
-      // Act
-      render(<DateTimePicker />);
-
       // Assert
       expect(screen.getByText("Select date")).toBeInTheDocument();
       expect(screen.getByTestId("calendar-icon")).toBeInTheDocument();
@@ -232,18 +254,12 @@ describe("DateTimePicker", () => {
     });
 
     it("should render calendar in range mode", () => {
-      // Act
-      render(<DateTimePicker />);
-
       // Assert
       const calendar = screen.getByTestId("calendar");
       expect(calendar).toHaveAttribute("data-mode", "range");
     });
 
     it("should render all required form elements", () => {
-      // Act
-      render(<DateTimePicker />);
-
       // Assert
       expect(screen.getByTestId("calendar")).toBeInTheDocument();
       expect(screen.getByTestId("input-time-from")).toBeInTheDocument();
@@ -253,9 +269,6 @@ describe("DateTimePicker", () => {
     });
 
     it("should have correct input attributes for time inputs", () => {
-      // Act
-      render(<DateTimePicker />);
-
       // Assert
       const fromTimeInput = screen.getByTestId("input-time-from");
       const toTimeInput = screen.getByTestId("input-time-to");
@@ -268,13 +281,45 @@ describe("DateTimePicker", () => {
       expect(toTimeInput).toHaveAttribute("step", "1");
       expect(toTimeInput).toHaveAttribute("id", "time-to");
     });
+
+    it("should render proper component hierarchy", () => {
+      // Assert
+      expect(screen.getByTestId("popover")).toBeInTheDocument();
+      expect(screen.getByTestId("popover-trigger")).toBeInTheDocument();
+      expect(screen.getByTestId("popover-content")).toBeInTheDocument();
+      expect(screen.getByTestId("card")).toBeInTheDocument();
+      expect(screen.getByTestId("card-content")).toBeInTheDocument();
+      expect(screen.getByTestId("card-footer")).toBeInTheDocument();
+    });
+
+    it("should have proper accessibility labels for time inputs", () => {
+      // Assert
+      const fromLabel = screen.getByTestId("label-time-from");
+      const toLabel = screen.getByTestId("label-time-to");
+
+      expect(fromLabel).toHaveAttribute("for", "time-from");
+      expect(toLabel).toHaveAttribute("for", "time-to");
+      expect(fromLabel).toHaveClass("sr-only");
+      expect(toLabel).toHaveClass("sr-only");
+    });
+
+    it("should have correct button attributes", () => {
+      // Assert
+      const button = screen.getByTestId("date-picker-button");
+      expect(button).toHaveAttribute("data-variant", "outline");
+      expect(button).toHaveAttribute("id", "dates");
+    });
+
+    it("should have correct popover content alignment", () => {
+      // Assert
+      const popoverContent = screen.getByTestId("popover-content");
+      expect(popoverContent).toHaveAttribute("data-align", "end");
+    });
   });
 
   describe("Date Range Selection", () => {
     it("should update button text when a complete date range is selected", async () => {
       // Act
-      render(<DateTimePicker />);
-
       const selectButton = screen.getByTestId("select-date-range");
       fireEvent.click(selectButton);
 
@@ -289,8 +334,6 @@ describe("DateTimePicker", () => {
 
     it("should pass selected date range to calendar component", async () => {
       // Act
-      render(<DateTimePicker />);
-
       const selectButton = screen.getByTestId("select-date-range");
       fireEvent.click(selectButton);
 
@@ -310,12 +353,10 @@ describe("DateTimePicker", () => {
           delay: 1000,
         });
 
-        // Act
-        render(<DateTimePicker />);
-
         const fromTimeInput = screen.getByTestId("input-time-from");
         const toTimeInput = screen.getByTestId("input-time-to");
 
+        // Act
         await user.type(fromTimeInput, "12:00:00");
         await user.type(toTimeInput, "13:00:00");
 
@@ -328,8 +369,6 @@ describe("DateTimePicker", () => {
         const errorMessage = "End time cannot be before start time";
 
         // Act
-        render(<DateTimePicker />);
-
         const fromTimeInput = screen.getByTestId("input-time-from");
         const toTimeInput = screen.getByTestId("input-time-to");
 
@@ -349,12 +388,11 @@ describe("DateTimePicker", () => {
         ["", "12:00:00"],
         ["12:00:00", "12:00:00"],
       ])("should not display the error toast when from <= to", (from, to) => {
-        // Act
-        render(<DateTimePicker />);
-
+        // Arrange
         const fromTimeInput = screen.getByTestId("input-time-from");
         const toTimeInput = screen.getByTestId("input-time-to");
 
+        // Act
         fireEvent.change(fromTimeInput, { target: { value: from } });
         fireEvent.change(toTimeInput, { target: { value: to } });
 
@@ -362,54 +400,6 @@ describe("DateTimePicker", () => {
         expect(mockToast.error).not.toHaveBeenCalled();
         expect(fromTimeInput).toHaveDisplayValue(from);
         expect(toTimeInput).toHaveDisplayValue(to);
-      });
-    });
-
-    describe("Component Structure and Accessibility", () => {
-      it("should render proper component hierarchy", () => {
-        // Act
-        render(<DateTimePicker />);
-
-        // Assert
-        expect(screen.getByTestId("popover")).toBeInTheDocument();
-        expect(screen.getByTestId("popover-trigger")).toBeInTheDocument();
-        expect(screen.getByTestId("popover-content")).toBeInTheDocument();
-        expect(screen.getByTestId("card")).toBeInTheDocument();
-        expect(screen.getByTestId("card-content")).toBeInTheDocument();
-        expect(screen.getByTestId("card-footer")).toBeInTheDocument();
-      });
-
-      it("should have proper accessibility labels for time inputs", () => {
-        // Act
-        render(<DateTimePicker />);
-
-        // Assert
-        const fromLabel = screen.getByTestId("label-time-from");
-        const toLabel = screen.getByTestId("label-time-to");
-
-        expect(fromLabel).toHaveAttribute("for", "time-from");
-        expect(toLabel).toHaveAttribute("for", "time-to");
-        expect(fromLabel).toHaveClass("sr-only");
-        expect(toLabel).toHaveClass("sr-only");
-      });
-
-      it("should have correct button attributes", () => {
-        // Act
-        render(<DateTimePicker />);
-
-        // Assert
-        const button = screen.getByTestId("date-picker-button");
-        expect(button).toHaveAttribute("data-variant", "outline");
-        expect(button).toHaveAttribute("id", "dates");
-      });
-
-      it("should have correct popover content alignment", () => {
-        // Act
-        render(<DateTimePicker />);
-
-        // Assert
-        const popoverContent = screen.getByTestId("popover-content");
-        expect(popoverContent).toHaveAttribute("data-align", "end");
       });
     });
   });
