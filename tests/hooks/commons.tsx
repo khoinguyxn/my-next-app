@@ -41,4 +41,5 @@ export const createMockOrderItemService = (): IOrderItemService => ({
 
 export const createMockMenuItemService = (): IMenuItemService => ({
   getAll: jest.fn<Promise<MenuItem[]>, []>(),
+  get: jest.fn<Promise<MenuItem | null>, [number]>(),
 });
