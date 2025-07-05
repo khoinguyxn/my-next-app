@@ -1,3 +1,5 @@
+"use client";
+
 import { PageHeader } from "@/components/page-header";
 import {
   Card,
@@ -8,8 +10,20 @@ import {
 import { TypographyH4 } from "@/components/ui/typography-h4";
 import { Separator } from "@/components/ui/separator";
 import DateTimePicker from "@/components/date-time-picker";
+import useGetOrders from "@/hooks/use-get-orders";
+import { useAtomValue } from "jotai";
+import { dateRangeAtom } from "@/models/orders-atom";
+import { useEffect } from "react";
 
 export default function Orders() {
+  const dateRange = useAtomValue(dateRangeAtom);
+  const { data } = useGetOrders(dateRange);
+
+  useEffect(() => {
+    console.log(`dateRange: ${dateRange}`);
+    console.log(`data: ${data}`);
+  }, [data, dateRange]);
+
   return (
     <>
       <PageHeader>

@@ -4,15 +4,22 @@ import { SupabaseClient } from "@supabase/supabase-js";
 import { Database } from "@/infrastructure/supabase/database.types";
 import { IOrderRepository } from "@/domain/repositories/i-order-repository";
 import { Order, OrderWithInsert } from "@/domain/models/orders/order";
+import { DateRange } from "react-day-picker";
 
 @injectable("Request")
 export class OrderRepository implements IOrderRepository {
   constructor(@inject("Supabase") private supabase: SupabaseClient<Database>) {}
 
-  async getAll(): Promise<Order[]> {
-    const { data, error } = await this.supabase
-      .from("Order")
-      .select("*, orderItems: OrderItem(*)");
+  async getAll(dateRange?: DateRange): Promise<Order[]> {
+    const query = dateRange
+      ? this.supabase
+          .from("Order")
+          .select("*, orderItems: OrderItem(*)")
+          .gte("createdAt", dateRange?.from?.toISOString())
+          .lte("createdAt", dateRange?.to?.toISOString())
+      : this.supabase.from("Order").select("*, orderItems: OrderItem(*)");
+
+    const { data, error } = await query;
 
     if (error) throw error;
 

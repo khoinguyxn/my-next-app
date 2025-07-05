@@ -1,6 +1,6 @@
 "use client";
 
-import { ChangeEvent, useState } from "react";
+import { ChangeEvent } from "react";
 
 import { Calendar } from "@/components/ui/calendar";
 import { type DateRange } from "react-day-picker";
@@ -15,9 +15,11 @@ import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
+import { useAtom } from "jotai";
+import { dateRangeAtom } from "@/models/orders-atom";
 
 export default function DateTimePicker() {
-  const [dateRange, setDateRange] = useState<DateRange | undefined>();
+  const [dateRange, setDateRange] = useAtom(dateRangeAtom);
 
   const validateTimeRange = (
     fromDate: Date | undefined,
